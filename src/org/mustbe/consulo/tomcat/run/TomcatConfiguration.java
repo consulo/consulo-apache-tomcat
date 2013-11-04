@@ -16,6 +16,12 @@
 
 package org.mustbe.consulo.tomcat.run;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.consulo.sdk.SdkUtil;
+import org.consulo.util.pointers.NamedPointer;
+import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.execution.ExecutionException;
@@ -30,6 +36,10 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.util.InvalidDataException;
+import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.packaging.artifacts.Artifact;
 
 /**
  * @author VISTALL
@@ -37,7 +47,12 @@ import com.intellij.openapi.project.Project;
  */
 public class TomcatConfiguration extends LocatableConfigurationBase implements ModuleRunConfiguration
 {
-	public int JPDA_ADDRESS = 8000;
+	public static final int DEFAULT_JPDA_ADDRESS = 8000;
+
+	public int JPDA_ADDRESS = DEFAULT_JPDA_ADDRESS;
+
+	private NamedPointer<Sdk> mySdkPointer;
+	private List<NamedPointer<Artifact>> myArtifacts = new ArrayList<NamedPointer<Artifact>>();
 
 	public TomcatConfiguration(Project project, ConfigurationFactory factory, String name)
 	{
@@ -48,7 +63,7 @@ public class TomcatConfiguration extends LocatableConfigurationBase implements M
 	@Override
 	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
 	{
-		return new TomcatSettingsEditor();
+		return new TomcatSettingsEditor(getProject());
 	}
 
 	@Nullable
@@ -56,6 +71,45 @@ public class TomcatConfiguration extends LocatableConfigurationBase implements M
 	public RunProfileState getState(@NotNull Executor executor, @NotNull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		return new TomcatRunState(executionEnvironment);
+	}
+
+	@Nullable
+	public Sdk getSdk()
+	{
+		return mySdkPointer == null ? null : mySdkPointer.get();
+	}
+
+	public String getSdkName()
+	{
+		return mySdkPointer == null ? null : mySdkPointer.getName();
+	}
+
+	public void setSdkName(String sdkName)
+	{
+		mySdkPointer = SdkUtil.createPointer(sdkName);
+	}
+
+	@Override
+	public void readExternal(Element element) throws InvalidDataException
+	{
+		super.readExternal(element);
+
+		String sdkName = element.getAttributeValue("sdk-name");
+		if(sdkName != null)
+		{
+			mySdkPointer = SdkUtil.createPointer(sdkName);
+		}
+	}
+
+	@Override
+	public void writeExternal(Element element) throws WriteExternalException
+	{
+		super.writeExternal(element);
+
+		if(mySdkPointer != null)
+		{
+			element.setAttribute("sdk-name", mySdkPointer.getName());
+		}
 	}
 
 	@NotNull

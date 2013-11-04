@@ -42,6 +42,12 @@ import com.intellij.openapi.util.SystemInfo;
  */
 public class TomcatSdkType extends SdkType
 {
+	@NotNull
+	public static TomcatSdkType getInstance()
+	{
+		return findInstance(TomcatSdkType.class);
+	}
+
 	private static final String VERSION_PREFIX = "Server number:";
 
 	public TomcatSdkType()
@@ -106,7 +112,7 @@ public class TomcatSdkType extends SdkType
 	@Override
 	public String suggestSdkName(String s, String s2)
 	{
-		return s2;
+		return "apache-tomcat";
 	}
 
 	@Nullable
