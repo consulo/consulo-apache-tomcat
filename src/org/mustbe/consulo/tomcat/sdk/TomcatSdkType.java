@@ -56,7 +56,7 @@ public class TomcatSdkType extends SdkType
 		return null;
 	}
 
-	public String getExecutablePath(String home)
+	public static String getExecutablePath(String home)
 	{
 		StringBuilder builder = new StringBuilder();
 		builder.append(home);

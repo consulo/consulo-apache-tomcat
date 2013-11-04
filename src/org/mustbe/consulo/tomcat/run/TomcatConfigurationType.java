@@ -34,7 +34,6 @@ public class TomcatConfigurationType implements ConfigurationType
 	private final ConfigurationFactory[] myFactories = new ConfigurationFactory[]{
 			new ConfigurationFactory(this)
 			{
-
 				@Override
 				public RunConfiguration createTemplateConfiguration(Project project)
 				{

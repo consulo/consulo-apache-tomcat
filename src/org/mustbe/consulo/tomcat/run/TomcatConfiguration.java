@@ -20,12 +20,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
-import com.intellij.execution.configuration.EmptyRunProfileState;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.LocatableConfigurationBase;
+import com.intellij.execution.configurations.ModuleRunConfiguration;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 
@@ -33,8 +35,10 @@ import com.intellij.openapi.project.Project;
  * @author VISTALL
  * @since 04.11.13.
  */
-public class TomcatConfiguration extends LocatableConfigurationBase
+public class TomcatConfiguration extends LocatableConfigurationBase implements ModuleRunConfiguration
 {
+	public int JPDA_ADDRESS = 8000;
+
 	public TomcatConfiguration(Project project, ConfigurationFactory factory, String name)
 	{
 		super(project, factory, name);
@@ -49,8 +53,15 @@ public class TomcatConfiguration extends LocatableConfigurationBase
 
 	@Nullable
 	@Override
-	public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment) throws ExecutionException
+	public RunProfileState getState(@NotNull Executor executor, @NotNull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
-		return EmptyRunProfileState.INSTANCE;
+		return new TomcatRunState(executionEnvironment);
+	}
+
+	@NotNull
+	@Override
+	public Module[] getModules()
+	{
+		return ModuleManager.getInstance(getProject()).getModules();
 	}
 }

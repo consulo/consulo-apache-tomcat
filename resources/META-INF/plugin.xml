@@ -17,9 +17,11 @@
 <idea-plugin>
 	<id>org.mustbe.consulo.tomcat</id>
 	<name>Apache Tomcat</name>
+	<depends>org.consulo.java</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<configurationType implementation="org.mustbe.consulo.tomcat.run.TomcatConfigurationType" />
 		<sdkType implementation="org.mustbe.consulo.tomcat.sdk.TomcatSdkType" />
+		<programRunner implementation="org.mustbe.consulo.tomcat.run.TomcatDebugProgramRunner" order="before defaultDebugRunner" />
 	</extensions>
 </idea-plugin>
