@@ -39,7 +39,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
-import com.intellij.packaging.artifacts.Artifact;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 
 /**
  * @author VISTALL
@@ -48,11 +49,9 @@ import com.intellij.packaging.artifacts.Artifact;
 public class TomcatConfiguration extends LocatableConfigurationBase implements ModuleRunConfiguration
 {
 	public static final int DEFAULT_JPDA_ADDRESS = 8000;
-
 	public int JPDA_ADDRESS = DEFAULT_JPDA_ADDRESS;
-
 	private NamedPointer<Sdk> mySdkPointer;
-	private List<NamedPointer<Artifact>> myArtifacts = new ArrayList<NamedPointer<Artifact>>();
+	private List<TomcatArtifactDeployItem> myDeploymentItems = new ArrayList<TomcatArtifactDeployItem>();
 
 	public TomcatConfiguration(Project project, ConfigurationFactory factory, String name)
 	{
@@ -99,6 +98,16 @@ public class TomcatConfiguration extends LocatableConfigurationBase implements M
 		{
 			mySdkPointer = SdkUtil.createPointer(sdkName);
 		}
+
+		for(Element artifactElement : element.getChildren("artifact"))
+		{
+			String name = artifactElement.getAttributeValue("name");
+			String path = artifactElement.getAttributeValue("path");
+			if(name != null)
+			{
+				myDeploymentItems.add(new TomcatArtifactDeployItem(ArtifactPointerUtil.getPointerManager(getProject()).create(name), StringUtil.notNullize(path)));
+			}
+		}
 	}
 
 	@Override
@@ -110,6 +119,19 @@ public class TomcatConfiguration extends LocatableConfigurationBase implements M
 		{
 			element.setAttribute("sdk-name", mySdkPointer.getName());
 		}
+
+		for(TomcatArtifactDeployItem artifact : myDeploymentItems)
+		{
+			Element artifactElement = new Element("artifact");
+			artifactElement.setAttribute("name", artifact.getArtifactPointer().getName());
+			artifactElement.setAttribute("path", artifact.getPath());
+			element.addContent(artifactElement);
+		}
+	}
+
+	public List<TomcatArtifactDeployItem> getDeploymentItems()
+	{
+		return myDeploymentItems;
 	}
 
 	@NotNull

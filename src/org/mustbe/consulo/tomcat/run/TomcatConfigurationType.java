@@ -20,10 +20,14 @@ import javax.swing.Icon;
 
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.tomcat.TomcatIcons;
+import org.mustbe.consulo.tomcat.sdk.TomcatSdkType;
+import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.SdkTable;
 
 /**
  * @author VISTALL
@@ -32,12 +36,23 @@ import com.intellij.openapi.project.Project;
 public class TomcatConfigurationType implements ConfigurationType
 {
 	private final ConfigurationFactory[] myFactories = new ConfigurationFactory[]{
-			new ConfigurationFactory(this)
+			new ConfigurationFactoryEx(this)
 			{
 				@Override
 				public RunConfiguration createTemplateConfiguration(Project project)
 				{
 					return new TomcatConfiguration(project, this, "Unnamed");
+				}
+
+				@Override
+				public void onNewConfigurationCreated(@NotNull RunConfiguration configuration)
+				{
+					TomcatConfiguration tomcatConfiguration = (TomcatConfiguration) configuration;
+					Sdk mostRecentSdkOfType = SdkTable.getInstance().findMostRecentSdkOfType(TomcatSdkType.getInstance());
+					if(mostRecentSdkOfType != null)
+					{
+						tomcatConfiguration.setSdkName(mostRecentSdkOfType.getName());
+					}
 				}
 			}
 	};
