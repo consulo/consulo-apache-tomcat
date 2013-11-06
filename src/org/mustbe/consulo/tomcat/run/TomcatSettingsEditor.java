@@ -233,7 +233,7 @@ public class TomcatSettingsEditor extends SettingsEditor<TomcatConfiguration>
 				{
 					for(Artifact artifact : dialog.getChosenElements())
 					{
-						myModel.addRow(new TomcatArtifactDeployItem(ArtifactPointerUtil.getPointerManager(myProject).create(artifact), "/"));
+						myModel.addRow(new TomcatArtifactDeployItem(ArtifactPointerUtil.getPointerManager(myProject).create(artifact), artifact.getName() + "/"));
 					}
 				}
 			}
