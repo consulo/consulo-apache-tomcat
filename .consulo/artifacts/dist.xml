@@ -11,6 +11,7 @@
         </element>
       </element>
       <element id="dir-copy" path="$PROJECT_DIR$/dep" />
+      <element id="artifact" artifact-name="java-web" />
     </root>
   </artifact>
 </component>

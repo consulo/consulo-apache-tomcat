@@ -1,0 +1,14 @@
+<idea-plugin>
+	<id>org.mustbe.consulo.java.web</id>
+	<name>Java Web API</name>
+
+	<extensions defaultExtensionNs="com.intellij">
+		<contentFolderTypeProvider implementation="org.mustbe.consulo.java.web.roots.WebContentFolderTypeProvider"/>
+
+		<fileTypeFactory implementation="org.mustbe.consulo.java.web.jsp.JspFileTypeFactory" />
+
+		<lang.parserDefinition language="JSP" implementationClass="org.mustbe.consulo.java.web.jsp.lang.JspParserDefinition" />
+
+		<moduleExtensionProvider key="java-web" parent-key="java" implementationClass="org.mustbe.consulo.java.web.module.extension.JavaWebModuleExtensionProvider"/>
+	</extensions>
+</idea-plugin>
