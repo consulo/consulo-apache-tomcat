@@ -16,17 +16,13 @@
 
 package org.mustbe.consulo.java.web;
 
-import javax.swing.Icon;
-
-import com.intellij.openapi.util.IconLoader;
-
 /**
  * @author VISTALL
  * @since 07.11.13.
  */
-public interface JavaWebIcons
+public interface JavaWebConstants
 {
-	Icon Jsp = IconLoader.findIcon("/icons/jsp.png");
-	Icon Jspx = IconLoader.findIcon("/icons/jspx.png");
-	Icon WebXml = IconLoader.findIcon("/icons/web_xml.png");
+	String WEB_INF = "WEB-INF";
+
+	String WEB_APP_XML = "web.xml";
 }

@@ -17,6 +17,18 @@
 <idea-plugin>
 	<id>org.mustbe.consulo.java.web</id>
 	<name>Java Web API</name>
+	<depends>com.intellij.xml</depends>
+	<depends>org.consulo.java</depends>
+
+	<extensions defaultExtensionNs="com.intellij.xml">
+		<standardResource url="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" path="web-app_2_5.xsd" version="2.5" />
+		<standardResource url="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" path="web-app_3_0.xsd" version="3.0" />
+		<standardResource url="http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd" path="web-app_3_1.xsd" version="3.1" />
+	</extensions>
+
+	<extensions defaultExtensionNs="com.intellij.xml.dom">
+		<fileDescription implementation="org.mustbe.consulo.java.web.dom.web.WebAppDescriptor" />
+	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<contentFolderTypeProvider implementation="org.mustbe.consulo.java.web.roots.WebContentFolderTypeProvider"/>

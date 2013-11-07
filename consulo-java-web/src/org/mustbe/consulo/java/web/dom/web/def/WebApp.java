@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.java.web;
+package org.mustbe.consulo.java.web.dom.web.def;
 
-import javax.swing.Icon;
-
-import com.intellij.openapi.util.IconLoader;
+import com.intellij.util.xml.DefinesXml;
+import com.intellij.util.xml.DomElement;
 
 /**
  * @author VISTALL
  * @since 07.11.13.
  */
-public interface JavaWebIcons
+@DefinesXml
+public interface WebApp extends DomElement
 {
-	Icon Jsp = IconLoader.findIcon("/icons/jsp.png");
-	Icon Jspx = IconLoader.findIcon("/icons/jspx.png");
-	Icon WebXml = IconLoader.findIcon("/icons/web_xml.png");
 }
