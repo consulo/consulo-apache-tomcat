@@ -18,7 +18,7 @@ package org.mustbe.consulo.java.web.module.extension;
 
 import org.consulo.module.extension.impl.ModuleExtensionImpl;
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.java.web.roots.WebContentFolderTypeProvider;
+import org.mustbe.consulo.java.web.roots.WebResourcesFolderTypeProvider;
 import org.mustbe.consulo.roots.ContentFoldersSupport;
 import com.intellij.openapi.module.Module;
 
@@ -26,7 +26,7 @@ import com.intellij.openapi.module.Module;
  * @author VISTALL
  * @since 07.11.13.
  */
-@ContentFoldersSupport(value = WebContentFolderTypeProvider.class)
+@ContentFoldersSupport(value = WebResourcesFolderTypeProvider.class)
 public class JavaWebModuleExtension extends ModuleExtensionImpl<JavaWebModuleExtension>
 {
 	public JavaWebModuleExtension(@NotNull String id, @NotNull Module module)

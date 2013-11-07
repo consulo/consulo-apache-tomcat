@@ -21,6 +21,7 @@ import java.awt.Color;
 import javax.swing.Icon;
 
 import org.jetbrains.annotations.NotNull;
+import org.mustbe.consulo.roots.ContentFolderTypeProvider;
 import org.mustbe.consulo.roots.impl.BaseContentFolderTypeProvider;
 import org.mustbe.consulo.roots.impl.ProductionResourceContentFolderTypeProvider;
 import com.intellij.icons.AllIcons;
@@ -29,9 +30,14 @@ import com.intellij.icons.AllIcons;
  * @author VISTALL
  * @since 07.11.13.
  */
-public class WebContentFolderTypeProvider extends BaseContentFolderTypeProvider
+public class WebResourcesFolderTypeProvider extends BaseContentFolderTypeProvider
 {
-	public WebContentFolderTypeProvider()
+	public static ContentFolderTypeProvider getInstance()
+	{
+		return EP_NAME.findExtension(WebResourcesFolderTypeProvider.class);
+	}
+
+	public WebResourcesFolderTypeProvider()
 	{
 		super("JAVA_WEB_RESOURCES");
 	}

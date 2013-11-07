@@ -19,6 +19,7 @@
 	<name>Java Web API</name>
 	<depends>com.intellij.xml</depends>
 	<depends>org.consulo.java</depends>
+	<resource-bundle>messages.JavaWebBundle</resource-bundle>
 
 	<extensions defaultExtensionNs="com.intellij.xml">
 		<standardResource url="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" path="web-app_2_5.xsd" version="2.5" />
@@ -31,7 +32,11 @@
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<contentFolderTypeProvider implementation="org.mustbe.consulo.java.web.roots.WebContentFolderTypeProvider"/>
+		<contentFolderTypeProvider implementation="org.mustbe.consulo.java.web.roots.WebResourcesFolderTypeProvider"/>
+
+		<packaging.artifactType implementation="org.mustbe.consulo.java.web.artifact.ExplodedWarArtifactType" />
+		<packaging.artifactType implementation="org.mustbe.consulo.java.web.artifact.WarArtifactType" />
+		<packaging.elementType implementation="org.mustbe.consulo.java.web.artifact.WebResourceModuleOutputElementType" />
 
 		<fileTypeFactory implementation="org.mustbe.consulo.java.web.jsp.JspFileTypeFactory" />
 

@@ -27,6 +27,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.java.web.artifact.ExplodedWarArtifactType;
 import org.mustbe.consulo.tomcat.sdk.TomcatSdkType;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.ConfigurationException;
@@ -215,6 +216,11 @@ public class TomcatSettingsEditor extends SettingsEditor<TomcatConfiguration>
 				List<Artifact> listArtifacts = new ArrayList<Artifact>(artifacts.length);
 				loop: for(Artifact artifact : artifacts)
 				{
+					if(artifact.getArtifactType() != ExplodedWarArtifactType.getInstance())
+					{
+						continue;
+					}
+
 					for(TomcatArtifactDeployItem item : myItems)
 					{
 						Artifact tempArtifact = item.getArtifactPointer().get();

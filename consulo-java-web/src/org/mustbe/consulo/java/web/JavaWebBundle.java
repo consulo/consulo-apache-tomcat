@@ -16,18 +16,13 @@
 
 package org.mustbe.consulo.java.web;
 
-import javax.swing.Icon;
-
-import com.intellij.openapi.util.IconLoader;
+import org.consulo.lombok.annotations.Bundle;
 
 /**
  * @author VISTALL
  * @since 07.11.13.
  */
-public interface JavaWebIcons
+@Bundle("messages.JavaWebBundle")
+public class JavaWebBundle
 {
-	Icon Jsp = IconLoader.findIcon("/icons/jsp.png");
-	Icon Jspx = IconLoader.findIcon("/icons/jspx.png");
-	Icon WebXml = IconLoader.findIcon("/icons/web_xml.png");
-	Icon WarArtifact = IconLoader.findIcon("/icons/warArtifact.png");
 }
