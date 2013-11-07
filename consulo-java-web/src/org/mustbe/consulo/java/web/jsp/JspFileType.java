@@ -21,19 +21,37 @@ import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.java.web.JavaWebIcons;
+import org.mustbe.consulo.java.web.jsp.highlight.JspEditorHighlighter;
+import com.intellij.openapi.editor.colors.EditorColorsScheme;
+import com.intellij.openapi.editor.highlighter.EditorHighlighter;
+import com.intellij.openapi.fileTypes.EditorHighlighterProvider;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.FileTypeEditorHighlighterProviders;
 import com.intellij.openapi.fileTypes.LanguageFileType;
+import com.intellij.openapi.fileTypes.TemplateLanguageFileType;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 
 /**
  * @author VISTALL
  * @since 07.11.13.
  */
-public class JspFileType extends LanguageFileType
+public class JspFileType extends LanguageFileType implements TemplateLanguageFileType
 {
 	public static final JspFileType INSTANCE = new JspFileType();
 
 	protected JspFileType()
 	{
 		super(JspLanguage.INSTANCE);
+
+		FileTypeEditorHighlighterProviders.INSTANCE.addExplicitExtension(this, new EditorHighlighterProvider()
+		{
+			@Override
+			public EditorHighlighter getEditorHighlighter(@Nullable Project project, @NotNull FileType fileType, @Nullable VirtualFile virtualFile, @NotNull EditorColorsScheme colors)
+			{
+				return new JspEditorHighlighter(project, virtualFile, colors);
+			}
+		});
 	}
 
 	@NotNull

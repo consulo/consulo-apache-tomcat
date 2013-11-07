@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.java.web.jsp.lang;
+package org.mustbe.consulo.java.web.jsp;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.java.web.jsp.JspFileType;
-import org.mustbe.consulo.java.web.jsp.JspLanguage;
+import org.mustbe.consulo.java.web.jsp.lexer.JspLexer;
+import org.mustbe.consulo.java.web.jsp.psi.impl.JspFileImpl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.LanguageVersion;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiParser;
-import com.intellij.lexer.EmptyLexer;
 import com.intellij.lexer.Lexer;
-import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
@@ -44,13 +41,13 @@ import com.intellij.psi.tree.TokenSet;
  */
 public class JspParserDefinition implements ParserDefinition
 {
-	private static final IFileElementType FILE_ELEMENT_TYPE = new IFileElementType(JspLanguage.INSTANCE);
+	private static final IFileElementType FILE_ELEMENT_TYPE = new IFileElementType("JSP_FILE_ELEMENT_TYPE", JspLanguage.INSTANCE);
 
 	@NotNull
 	@Override
 	public Lexer createLexer(@Nullable Project project, @NotNull LanguageVersion languageVersion)
 	{
-		return new EmptyLexer();
+		return new JspLexer();
 	}
 
 	@NotNull
@@ -112,15 +109,7 @@ public class JspParserDefinition implements ParserDefinition
 	@Override
 	public PsiFile createFile(FileViewProvider fileViewProvider)
 	{
-		return new PsiFileBase(fileViewProvider, JspLanguage.INSTANCE)
-		{
-			@NotNull
-			@Override
-			public FileType getFileType()
-			{
-				return JspFileType.INSTANCE;
-			}
-		};
+		return new JspFileImpl(fileViewProvider);
 	}
 
 	@Override

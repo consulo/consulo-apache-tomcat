@@ -40,7 +40,11 @@
 
 		<fileTypeFactory implementation="org.mustbe.consulo.java.web.jsp.JspFileTypeFactory" />
 
-		<lang.parserDefinition language="JSP" implementationClass="org.mustbe.consulo.java.web.jsp.lang.JspParserDefinition" />
+		<lang.fileViewProviderFactory language="JSP" implementationClass="org.mustbe.consulo.java.web.jsp.JspFileViewProviderFactory" />
+		<lang.parserDefinition language="JSP" implementationClass="org.mustbe.consulo.java.web.jsp.JspParserDefinition" />
+
+		<lang.syntaxHighlighterFactory key="JSP" implementationClass="org.mustbe.consulo.java.web.jsp.highlight.JspSyntaxHighlighterFactory"/>
+		<syntaxHighlighter key="JSP" implementationClass="org.mustbe.consulo.java.web.jsp.highlight.JspSyntaxHighlighter"/>
 
 		<moduleExtensionProvider key="java-web" parent-key="java" implementationClass="org.mustbe.consulo.java.web.module.extension.JavaWebModuleExtensionProvider"/>
 	</extensions>
