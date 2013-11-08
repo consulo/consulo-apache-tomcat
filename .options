@@ -1,4 +1,5 @@
 <options>
 	<dep>consulo-java</dep>
+	<dep>consulo-java-web</dep>
 	<dep>consulo-xml</dep>
 </options>
