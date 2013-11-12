@@ -19,6 +19,8 @@ package org.mustbe.consulo.tomcat.run;
 import javax.swing.Icon;
 
 import org.jetbrains.annotations.NotNull;
+import org.mustbe.consulo.java.web.module.extension.JavaWebModuleExtension;
+import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import org.mustbe.consulo.tomcat.TomcatIcons;
 import org.mustbe.consulo.tomcat.sdk.TomcatSdkType;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
@@ -42,6 +44,12 @@ public class TomcatConfigurationType implements ConfigurationType
 				public RunConfiguration createTemplateConfiguration(Project project)
 				{
 					return new TomcatConfiguration(project, this, "Unnamed");
+				}
+
+				@Override
+				public boolean isApplicable(@NotNull Project project)
+				{
+					return ModuleExtensionHelper.getInstance(project).hasModuleExtension(JavaWebModuleExtension.class);
 				}
 
 				@Override
