@@ -10,7 +10,6 @@
           </element>
         </element>
       </element>
-      <element id="dir-copy" path="$PROJECT_DIR$/dep" />
     </root>
   </artifact>
 </component>
