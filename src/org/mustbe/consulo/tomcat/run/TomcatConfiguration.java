@@ -16,7 +16,9 @@
 
 package org.mustbe.consulo.tomcat.run;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.consulo.sdk.SdkUtil;
@@ -24,21 +26,27 @@ import org.consulo.util.pointers.NamedPointer;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.LocatableConfigurationBase;
+import com.intellij.execution.configurations.LogFileOptions;
 import com.intellij.execution.configurations.ModuleRunConfiguration;
+import com.intellij.execution.configurations.PredefinedLogFile;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.SettingsEditor;
+import com.intellij.openapi.options.SettingsEditorGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 
@@ -62,7 +70,39 @@ public class TomcatConfiguration extends LocatableConfigurationBase implements M
 	@Override
 	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
 	{
-		return new TomcatSettingsEditor(getProject());
+		SettingsEditorGroup<TomcatConfiguration> c = new SettingsEditorGroup<TomcatConfiguration>();
+		c.addEditor("General", new TomcatGeneralSettingsEditor(getProject()));
+		c.addEditor("Deployment", new TomcatDeploymentSettingsEditor(getProject()));
+		c.addEditor("Log", new LogConfigurationPanel<TomcatConfiguration>());
+		return c;
+	}
+
+	@Nullable
+	@Override
+	public LogFileOptions getOptionsForPredefinedLogFile(PredefinedLogFile predefinedLogFile)
+	{
+		if(predefinedLogFile.equals(TomcatConfigurationType.TOMCAT_LOCALHOST_LOG))
+		{
+			Calendar calendar = Calendar.getInstance();
+
+			StringBuilder builder = new StringBuilder();
+			builder.append(PathManager.getSystemPath());
+			builder.append("/apache-tomcat/");
+			builder.append(getName());
+			builder.append("_");
+			builder.append(getProject().getName());
+			builder.append("/logs/localhost.");
+			builder.append(calendar.get(Calendar.YEAR));
+			builder.append("-");
+			builder.append(calendar.get(Calendar.MONTH) + 1);
+			builder.append("-");
+			builder.append(calendar.get(Calendar.DAY_OF_MONTH));
+			builder.append(".log");
+
+			FileUtil.createIfNotExists(new File(builder.toString()));
+			return new LogFileOptions("localhost.log", builder.toString(), true, true, false);
+		}
+		return super.getOptionsForPredefinedLogFile(predefinedLogFile);
 	}
 
 	@Nullable

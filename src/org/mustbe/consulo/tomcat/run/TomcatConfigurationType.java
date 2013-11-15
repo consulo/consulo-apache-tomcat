@@ -26,6 +26,7 @@ import org.mustbe.consulo.tomcat.sdk.TomcatSdkType;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;
+import com.intellij.execution.configurations.PredefinedLogFile;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -37,6 +38,8 @@ import com.intellij.openapi.projectRoots.SdkTable;
  */
 public class TomcatConfigurationType implements ConfigurationType
 {
+	public static final PredefinedLogFile TOMCAT_LOCALHOST_LOG = new PredefinedLogFile("TOMCAT_LOCALHOST_LOG", true);
+
 	private final ConfigurationFactory[] myFactories = new ConfigurationFactory[]{
 			new ConfigurationFactoryEx(this)
 			{
@@ -61,6 +64,8 @@ public class TomcatConfigurationType implements ConfigurationType
 					{
 						tomcatConfiguration.setSdkName(mostRecentSdkOfType.getName());
 					}
+
+					tomcatConfiguration.addPredefinedLogFile(TOMCAT_LOCALHOST_LOG);
 				}
 			}
 	};

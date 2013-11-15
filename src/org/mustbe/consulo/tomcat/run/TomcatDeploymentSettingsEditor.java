@@ -22,22 +22,16 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.table.TableCellRenderer;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.java.web.artifact.ExplodedWarArtifactType;
-import org.mustbe.consulo.tomcat.sdk.TomcatSdkType;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.roots.ui.configuration.SdkComboBox;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
-import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.util.text.StringUtilRt;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.artifacts.ArtifactPointerUtil;
@@ -45,7 +39,6 @@ import com.intellij.packaging.impl.ui.ChooseArtifactsDialog;
 import com.intellij.ui.AnActionButton;
 import com.intellij.ui.AnActionButtonRunnable;
 import com.intellij.ui.ColoredTableCellRenderer;
-import com.intellij.ui.NumberDocument;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
@@ -56,18 +49,17 @@ import com.intellij.util.ui.ListTableModel;
  * @author VISTALL
  * @since 04.11.13.
  */
-public class TomcatSettingsEditor extends SettingsEditor<TomcatConfiguration>
+public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfiguration>
 {
 	private JPanel myRoot;
-	private SdkComboBox myBundleList;
-	private JTextField myJpdaPort;
+
 	private JPanel myDeploymentPane;
 	private Project myProject;
 
 	private List<TomcatArtifactDeployItem> myItems;
 	private ListTableModel<TomcatArtifactDeployItem> myModel;
 
-	public TomcatSettingsEditor(Project project)
+	public TomcatDeploymentSettingsEditor(Project project)
 	{
 		myProject = project;
 	}
@@ -75,9 +67,6 @@ public class TomcatSettingsEditor extends SettingsEditor<TomcatConfiguration>
 	@Override
 	protected void resetEditorFrom(TomcatConfiguration tomcatConfiguration)
 	{
-		myJpdaPort.setText(String.valueOf(tomcatConfiguration.JPDA_ADDRESS));
-		myBundleList.setSelectedSdk(tomcatConfiguration.getSdkName());
-
 		myItems.clear();
 		myItems.addAll(tomcatConfiguration.getDeploymentItems());
 		myModel.fireTableDataChanged();
@@ -86,9 +75,6 @@ public class TomcatSettingsEditor extends SettingsEditor<TomcatConfiguration>
 	@Override
 	protected void applyEditorTo(TomcatConfiguration tomcatConfiguration) throws ConfigurationException
 	{
-		tomcatConfiguration.JPDA_ADDRESS = StringUtilRt.parseInt(myJpdaPort.getText(), 0);
-		tomcatConfiguration.setSdkName(myBundleList.getSelectedSdkName());
-
 		List<TomcatArtifactDeployItem> deploymentItems = tomcatConfiguration.getDeploymentItems();
 		deploymentItems.clear();
 		deploymentItems.addAll(myItems);
@@ -108,18 +94,6 @@ public class TomcatSettingsEditor extends SettingsEditor<TomcatConfiguration>
 		{
 			model.reset(myProject);
 		}
-
-		myBundleList = new SdkComboBox(model, new Condition<SdkTypeId>()
-		{
-			@Override
-			public boolean value(SdkTypeId sdkTypeId)
-			{
-				return sdkTypeId == TomcatSdkType.getInstance();
-			}
-		}, false);
-		myJpdaPort = new JTextField();
-		myJpdaPort.setDocument(new NumberDocument());
-
 		myItems = new ArrayList<TomcatArtifactDeployItem>();
 		myModel = new ListTableModel<TomcatArtifactDeployItem>(new ColumnInfo[]{
 				new ColumnInfo<TomcatArtifactDeployItem, TomcatArtifactDeployItem>("Artifact")

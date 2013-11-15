@@ -65,7 +65,7 @@ public class TomcatRunState implements RunProfileState
 			throw new ExecutionException("No apache tomcat not set");
 		}
 
-		File tomcatBaseHome = new File(PathManager.getSystemPath(), "apache-tomcat/" + runProfile.getName());
+		File tomcatBaseHome = new File(PathManager.getSystemPath(), "apache-tomcat/" + runProfile.getName() + "_" + myExecutionEnvironment.getProject().getName());
 
 		preparingDeploy(tomcatBaseHome, runProfile);
 
