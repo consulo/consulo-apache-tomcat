@@ -18,7 +18,7 @@
 	<id>org.mustbe.consulo.tomcat</id>
 	<name>Apache Tomcat</name>
 	<depends>org.consulo.java</depends>
-	<depends>org.mustbe.consulo.java.web</depends>
+	<depends>org.mustbe.consulo.javaee</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<configurationType implementation="org.mustbe.consulo.tomcat.run.TomcatConfigurationType" />

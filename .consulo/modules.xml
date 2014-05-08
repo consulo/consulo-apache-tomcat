@@ -26,9 +26,9 @@
           </library>
         </orderEntry>
         <orderEntry type="module-library">
-          <library name="consulo:Java Web API">
+          <library name="consulo:JavaEE">
             <CLASSES>
-              <root url="jar://$MODULE_DIR$/dep/java-web/lib/java-web.jar!/" />
+              <root url="jar://$MODULE_DIR$/dep/javaee/lib/javaee.jar!/" />
             </CLASSES>
             <DOCUMENTATION />
             <SOURCES />
