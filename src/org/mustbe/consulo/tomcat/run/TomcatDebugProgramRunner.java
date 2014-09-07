@@ -26,7 +26,6 @@ import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.executors.DefaultDebugExecutor;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.RunContentDescriptor;
-import com.intellij.openapi.project.Project;
 
 /**
  * @author VISTALL
@@ -49,10 +48,10 @@ public class TomcatDebugProgramRunner extends GenericDebuggerRunner
 
 	@Nullable
 	@Override
-	protected RunContentDescriptor createContentDescriptor(Project project, RunProfileState state, RunContentDescriptor contentToReuse, ExecutionEnvironment env) throws ExecutionException
+	protected RunContentDescriptor createContentDescriptor(@NotNull RunProfileState state, @NotNull ExecutionEnvironment env) throws ExecutionException
 	{
 		TomcatConfiguration runProfile = (TomcatConfiguration) env.getRunProfile();
 		RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", String.valueOf(runProfile.JPDA_ADDRESS), false);
-		return attachVirtualMachine(project, state, contentToReuse, env, connection, true);
+		return attachVirtualMachine(state, env, connection, true);
 	}
 }
