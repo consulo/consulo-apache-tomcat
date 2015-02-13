@@ -21,19 +21,13 @@ import java.util.Arrays;
 
 import javax.swing.Icon;
 
-import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.tomcat.TomcatIcons;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.execution.util.ExecUtil;
-import com.intellij.openapi.projectRoots.AdditionalDataConfigurable;
-import com.intellij.openapi.projectRoots.SdkAdditionalData;
-import com.intellij.openapi.projectRoots.SdkModel;
-import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
-import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.util.SystemInfo;
 
 /**
@@ -45,7 +39,7 @@ public class TomcatSdkType extends SdkType
 	@NotNull
 	public static TomcatSdkType getInstance()
 	{
-		return findInstance(TomcatSdkType.class);
+		return EP_NAME.findExtension(TomcatSdkType.class);
 	}
 
 	private static final String VERSION_PREFIX = "Server number:";
@@ -53,13 +47,6 @@ public class TomcatSdkType extends SdkType
 	public TomcatSdkType()
 	{
 		super("APACHE_TOMCAT_SDK");
-	}
-
-	@Nullable
-	@Override
-	public String suggestHomePath()
-	{
-		return null;
 	}
 
 	public static String getExecutablePath(String home)
@@ -115,13 +102,6 @@ public class TomcatSdkType extends SdkType
 		return "apache-tomcat";
 	}
 
-	@Nullable
-	@Override
-	public AdditionalDataConfigurable createAdditionalDataConfigurable(SdkModel sdkModel, SdkModificator sdkModificator)
-	{
-		return null;
-	}
-
 	@NotNull
 	@Override
 	public String getPresentableName()
@@ -129,29 +109,10 @@ public class TomcatSdkType extends SdkType
 		return "Apache Tomcat";
 	}
 
-	@Override
-	public void saveAdditionalData(SdkAdditionalData sdkAdditionalData, Element element)
-	{
-
-	}
-
-	@Override
-	public boolean isRootTypeApplicable(OrderRootType type)
-	{
-		return false;
-	}
-
 	@Nullable
 	@Override
 	public Icon getIcon()
 	{
 		return TomcatIcons.Tomcat;
-	}
-
-	@Nullable
-	@Override
-	public Icon getGroupIcon()
-	{
-		return TomcatIcons .Tomcat;
 	}
 }
