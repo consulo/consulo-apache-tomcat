@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.tomcat.run;
+package consulo.tomcat.run;
 
 import javax.swing.Icon;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.tomcat.TomcatIcons;
-import org.mustbe.consulo.tomcat.sdk.TomcatSdkType;
+import consulo.tomcat.TomcatIcons;
+import consulo.tomcat.sdk.TomcatSdkType;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;

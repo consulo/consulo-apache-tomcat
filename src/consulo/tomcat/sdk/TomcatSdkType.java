@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.tomcat.sdk;
+package consulo.tomcat.sdk;
 
 import java.io.File;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ import javax.swing.Icon;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.tomcat.TomcatIcons;
+import consulo.tomcat.TomcatIcons;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.execution.util.ExecUtil;

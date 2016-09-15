@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.tomcat;
+package consulo.tomcat;
 
 import javax.swing.Icon;
 

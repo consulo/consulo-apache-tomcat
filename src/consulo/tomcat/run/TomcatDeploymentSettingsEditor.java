@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.tomcat.run;
+package consulo.tomcat.run;
 
 import java.util.ArrayList;
 import java.util.List;

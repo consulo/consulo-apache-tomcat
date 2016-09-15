@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.tomcat.run;
+package consulo.tomcat.run;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.tomcat.sdk.TomcatSdkType;
+import consulo.tomcat.sdk.TomcatSdkType;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;

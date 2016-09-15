@@ -2,7 +2,7 @@
   <artifact build-on-make="true" name="dist">
     <output-path>$PROJECT_DIR$/out/artifacts/dist</output-path>
     <root id="root">
-      <element id="directory" name="apache-tomcat">
+      <element id="directory" name="consulo.apache.tomcat">
         <element id="directory" name="lib">
           <element id="zip-archive" name="tomcat.jar">
             <element id="module-production-resource-output" name="consulo-apache-tomcat" />

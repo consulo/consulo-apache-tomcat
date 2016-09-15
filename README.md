@@ -1,0 +1,1 @@
+[![Build Status](http://must-be.org/jenkins/job/consulo-apache-tomcat/badge/icon)](http://must-be.org/jenkins/job/consulo-apache-tomcat/)
