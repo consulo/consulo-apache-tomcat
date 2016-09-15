@@ -26,11 +26,11 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.roots.ui.configuration.SdkComboBox;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.text.StringUtilRt;
 import com.intellij.ui.NumberDocument;
+import consulo.roots.ui.configuration.SdkComboBox;
 
 /**
  * @author VISTALL

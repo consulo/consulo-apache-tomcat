@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.consulo.util.pointers.NamedPointer;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -48,7 +46,9 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.packaging.artifacts.ArtifactPointerUtil;
+import consulo.bundle.SdkUtil;
+import consulo.packaging.artifacts.ArtifactPointerUtil;
+import consulo.util.pointers.NamedPointer;
 
 /**
  * @author VISTALL

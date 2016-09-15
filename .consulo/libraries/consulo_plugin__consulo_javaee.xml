@@ -1,0 +1,8 @@
+<component name="libraryTable">
+  <library name="consulo-plugin: consulo.javaee">
+    <binaries>
+      <root url="file://$PROJECT_DIR$/dep/consulo.javaee/lib" />
+    </binaries>
+    <jarDirectory url="file://$PROJECT_DIR$/dep/consulo.javaee/lib" recursive="false" />
+  </library>
+</component>

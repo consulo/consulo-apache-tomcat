@@ -26,7 +26,6 @@ import javax.swing.table.TableCellRenderer;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.java.web.artifact.ExplodedWarArtifactType;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
@@ -34,7 +33,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
-import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 import com.intellij.packaging.impl.ui.ChooseArtifactsDialog;
 import com.intellij.ui.AnActionButton;
 import com.intellij.ui.AnActionButtonRunnable;
@@ -44,6 +42,8 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
+import consulo.javaee.artifact.ExplodedWarArtifactType;
+import consulo.packaging.artifacts.ArtifactPointerUtil;
 
 /**
  * @author VISTALL

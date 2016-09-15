@@ -17,8 +17,8 @@
 <idea-plugin>
 	<id>org.mustbe.consulo.tomcat</id>
 	<name>Apache Tomcat</name>
-	<depends>org.consulo.java</depends>
-	<depends>org.mustbe.consulo.javaee</depends>
+	<depends>consulo.java</depends>
+	<depends>consulo.javaee</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<configurationType implementation="org.mustbe.consulo.tomcat.run.TomcatConfigurationType" />

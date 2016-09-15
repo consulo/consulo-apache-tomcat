@@ -19,8 +19,6 @@ package org.mustbe.consulo.tomcat.run;
 import javax.swing.Icon;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.java.web.module.extension.JavaWebModuleExtension;
-import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import org.mustbe.consulo.tomcat.TomcatIcons;
 import org.mustbe.consulo.tomcat.sdk.TomcatSdkType;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
@@ -31,6 +29,8 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTable;
+import consulo.javaee.module.extension.JavaWebModuleExtension;
+import consulo.module.extension.ModuleExtensionHelper;
 
 /**
  * @author VISTALL
