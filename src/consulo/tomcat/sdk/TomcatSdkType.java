@@ -29,6 +29,7 @@ import com.intellij.execution.process.ProcessOutput;
 import com.intellij.execution.util.ExecUtil;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.util.SystemInfo;
+import consulo.ui.image.Image;
 
 /**
  * @author VISTALL
@@ -111,7 +112,7 @@ public class TomcatSdkType extends SdkType
 
 	@Nullable
 	@Override
-	public Icon getIcon()
+	public Image getIcon()
 	{
 		return TomcatIcons.Tomcat;
 	}

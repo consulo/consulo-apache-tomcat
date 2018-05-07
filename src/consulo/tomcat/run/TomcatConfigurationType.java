@@ -31,6 +31,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTable;
 import consulo.javaee.module.extension.JavaWebModuleExtension;
 import consulo.module.extension.ModuleExtensionHelper;
+import consulo.ui.image.Image;
 
 /**
  * @author VISTALL
@@ -83,7 +84,7 @@ public class TomcatConfigurationType implements ConfigurationType
 	}
 
 	@Override
-	public Icon getIcon()
+	public Image getIcon()
 	{
 		return TomcatIcons.Tomcat;
 	}
