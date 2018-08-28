@@ -1,4 +1,4 @@
 /out
-/.consul
+.consulo/
 /dep
 target/
