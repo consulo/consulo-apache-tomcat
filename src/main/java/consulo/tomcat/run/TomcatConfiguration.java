@@ -16,26 +16,11 @@
 
 package consulo.tomcat.run;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import org.jdom.Element;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.LocatableConfigurationBase;
-import com.intellij.execution.configurations.LogFileOptions;
-import com.intellij.execution.configurations.ModuleRunConfiguration;
-import com.intellij.execution.configurations.PredefinedLogFile;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunProfileState;
+import com.intellij.execution.configurations.*;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.SettingsEditor;
@@ -47,8 +32,17 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import consulo.bundle.SdkUtil;
+import consulo.container.boot.ContainerPathManager;
 import consulo.packaging.artifacts.ArtifactPointerUtil;
 import consulo.util.pointers.NamedPointer;
+import org.jdom.Element;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author VISTALL
@@ -86,7 +80,7 @@ public class TomcatConfiguration extends LocatableConfigurationBase implements M
 			Calendar calendar = Calendar.getInstance();
 
 			StringBuilder builder = new StringBuilder();
-			builder.append(PathManager.getSystemPath());
+			builder.append(ContainerPathManager.get().getSystemPath());
 			builder.append("/apache-tomcat/");
 			builder.append(getName());
 			builder.append("_");

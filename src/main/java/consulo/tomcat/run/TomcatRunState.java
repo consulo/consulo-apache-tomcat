@@ -16,12 +16,6 @@
 
 package consulo.tomcat.run;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import consulo.tomcat.sdk.TomcatSdkType;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -35,11 +29,17 @@ import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.ui.ConsoleView;
-import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.packaging.artifacts.Artifact;
+import consulo.container.boot.ContainerPathManager;
+import consulo.tomcat.sdk.TomcatSdkType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author VISTALL
@@ -65,7 +65,7 @@ public class TomcatRunState implements RunProfileState
 			throw new ExecutionException("No apache tomcat not set");
 		}
 
-		File tomcatBaseHome = new File(PathManager.getSystemPath(), "apache-tomcat/" + runProfile.getName() + "_" + myExecutionEnvironment.getProject().getName());
+		File tomcatBaseHome = new File(ContainerPathManager.get().getSystemPath(), "apache-tomcat/" + runProfile.getName() + "_" + myExecutionEnvironment.getProject().getName());
 
 		preparingDeploy(tomcatBaseHome, runProfile);
 
