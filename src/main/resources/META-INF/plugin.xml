@@ -19,6 +19,11 @@
 	<name>Apache Tomcat</name>
 	<depends>consulo.java</depends>
 	<depends>consulo.javaee</depends>
+	<version>SNAPSHOT</version>
+
+	<tags>
+		<tag>web.server</tag>
+	</tags>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<configurationType implementation="consulo.tomcat.run.TomcatConfigurationType" />
