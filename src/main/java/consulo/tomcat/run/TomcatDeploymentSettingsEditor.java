@@ -16,34 +16,30 @@
 
 package consulo.tomcat.run;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
-
+import consulo.application.AllIcons;
+import consulo.compiler.artifact.Artifact;
+import consulo.compiler.artifact.ArtifactManager;
+import consulo.compiler.artifact.ArtifactPointerUtil;
+import consulo.configurable.ConfigurationException;
+import consulo.content.bundle.SdkModel;
+import consulo.execution.configuration.ui.SettingsEditor;
+import consulo.ide.impl.idea.packaging.impl.ui.ChooseArtifactsDialog;
+import consulo.ide.setting.ShowSettingsUtil;
+import consulo.javaee.artifact.ExplodedWarArtifactType;
+import consulo.project.Project;
+import consulo.ui.ex.SimpleTextAttributes;
+import consulo.ui.ex.awt.ColoredTableCellRenderer;
+import consulo.ui.ex.awt.ColumnInfo;
+import consulo.ui.ex.awt.ToolbarDecorator;
+import consulo.ui.ex.awt.table.JBTable;
+import consulo.ui.ex.awt.table.ListTableModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SettingsEditor;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
-import com.intellij.packaging.artifacts.Artifact;
-import com.intellij.packaging.artifacts.ArtifactManager;
-import com.intellij.packaging.impl.ui.ChooseArtifactsDialog;
-import com.intellij.ui.AnActionButton;
-import com.intellij.ui.AnActionButtonRunnable;
-import com.intellij.ui.ColoredTableCellRenderer;
-import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.ui.ToolbarDecorator;
-import com.intellij.ui.table.JBTable;
-import com.intellij.util.ui.ColumnInfo;
-import com.intellij.util.ui.ListTableModel;
-import consulo.javaee.artifact.ExplodedWarArtifactType;
-import consulo.packaging.artifacts.ArtifactPointerUtil;
+
+import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author VISTALL
@@ -53,7 +49,6 @@ public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfigu
 {
 	private JPanel myRoot;
 
-	private JPanel myDeploymentPane;
 	private Project myProject;
 
 	private List<TomcatArtifactDeployItem> myItems;
@@ -84,16 +79,13 @@ public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfigu
 	@Override
 	protected JComponent createEditor()
 	{
+		createUIComponents();
 		return myRoot;
 	}
 
 	private void createUIComponents()
 	{
-		ProjectSdksModel model = new ProjectSdksModel();
-		if(!model.isInitialized())
-		{
-			model.reset(myProject);
-		}
+		SdkModel model = ShowSettingsUtil.getInstance().getSdksModel();
 		myItems = new ArrayList<TomcatArtifactDeployItem>();
 		myModel = new ListTableModel<TomcatArtifactDeployItem>(new ColumnInfo[]{
 				new ColumnInfo<TomcatArtifactDeployItem, TomcatArtifactDeployItem>("Artifact")
@@ -180,47 +172,44 @@ public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfigu
 		};
 
 		ToolbarDecorator toolbarDecorator = ToolbarDecorator.createDecorator(table);
-		toolbarDecorator.setAddAction(new AnActionButtonRunnable()
+		toolbarDecorator.setAddAction(e ->
 		{
-			@Override
-			public void run(AnActionButton anActionButton)
+			Artifact[] artifacts = ArtifactManager.getInstance(myProject).getArtifacts();
+
+			List<Artifact> listArtifacts = new ArrayList<Artifact>(artifacts.length);
+			loop:
+			for(Artifact artifact : artifacts)
 			{
-				Artifact[] artifacts = ArtifactManager.getInstance(myProject).getArtifacts();
-
-				List<Artifact> listArtifacts = new ArrayList<Artifact>(artifacts.length);
-				loop: for(Artifact artifact : artifacts)
+				if(artifact.getArtifactType() != ExplodedWarArtifactType.getInstance())
 				{
-					if(artifact.getArtifactType() != ExplodedWarArtifactType.getInstance())
-					{
-						continue;
-					}
-
-					for(TomcatArtifactDeployItem item : myItems)
-					{
-						Artifact tempArtifact = item.getArtifactPointer().get();
-						if(tempArtifact.equals(artifact))
-						{
-							continue loop;
-						}
-					}
-
-					listArtifacts.add(artifact);
+					continue;
 				}
-				ChooseArtifactsDialog dialog = new ChooseArtifactsDialog(myProject, listArtifacts, "Choose Artifact", null);
-				dialog.show();
 
-				if(dialog.isOK())
+				for(TomcatArtifactDeployItem item : myItems)
 				{
-					for(Artifact artifact : dialog.getChosenElements())
+					Artifact tempArtifact = item.getArtifactPointer().get();
+					if(tempArtifact.equals(artifact))
 					{
-						myModel.addRow(new TomcatArtifactDeployItem(ArtifactPointerUtil.getPointerManager(myProject).create(artifact), artifact.getName() + "/"));
+						continue loop;
 					}
+				}
+
+				listArtifacts.add(artifact);
+			}
+			ChooseArtifactsDialog dialog = new ChooseArtifactsDialog(myProject, listArtifacts, "Choose Artifact", null);
+			dialog.show();
+
+			if(dialog.isOK())
+			{
+				for(Artifact artifact : dialog.getChosenElements())
+				{
+					myModel.addRow(new TomcatArtifactDeployItem(ArtifactPointerUtil.getPointerManager(myProject).create(artifact), artifact.getName() + "/"));
 				}
 			}
 		});
 
 		toolbarDecorator.disableUpDownActions();
 
-		myDeploymentPane = toolbarDecorator.createPanel();
+		myRoot = toolbarDecorator.createPanel();
 	}
 }

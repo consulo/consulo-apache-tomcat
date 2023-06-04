@@ -24,10 +24,4 @@
 	<tags>
 		<tag>web.server</tag>
 	</tags>
-
-	<extensions defaultExtensionNs="com.intellij">
-		<configurationType implementation="consulo.tomcat.run.TomcatConfigurationType" />
-		<sdkType implementation="consulo.tomcat.sdk.TomcatSdkType" />
-		<programRunner implementation="consulo.tomcat.run.TomcatDebugProgramRunner" order="before defaultDebugRunner" />
-	</extensions>
 </consulo-plugin>

@@ -16,21 +16,23 @@
 
 package consulo.tomcat.run;
 
+import com.intellij.java.debugger.impl.GenericDebuggerRunner;
+import com.intellij.java.execution.configurations.RemoteConnection;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.execution.configuration.RunProfile;
+import consulo.execution.configuration.RunProfileState;
+import consulo.execution.debug.DefaultDebugExecutor;
+import consulo.execution.runner.ExecutionEnvironment;
+import consulo.execution.ui.RunContentDescriptor;
+import consulo.process.ExecutionException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.debugger.impl.GenericDebuggerRunner;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.configurations.RemoteConnection;
-import com.intellij.execution.configurations.RunProfile;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.executors.DefaultDebugExecutor;
-import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.execution.ui.RunContentDescriptor;
 
 /**
  * @author VISTALL
  * @since 04.11.13.
  */
+@ExtensionImpl(order = "before defaultDebugRunner")
 public class TomcatDebugProgramRunner extends GenericDebuggerRunner
 {
 	@NotNull

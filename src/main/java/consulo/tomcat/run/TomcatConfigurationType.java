@@ -16,33 +16,32 @@
 
 package consulo.tomcat.run;
 
-import javax.swing.Icon;
-
-import org.jetbrains.annotations.NotNull;
-import consulo.tomcat.TomcatIcons;
-import consulo.tomcat.sdk.TomcatSdkType;
-import com.intellij.execution.configuration.ConfigurationFactoryEx;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.ConfigurationType;
-import com.intellij.execution.configurations.PredefinedLogFile;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkTable;
-import consulo.javaee.module.extension.JavaWebModuleExtension;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.apache.tomcat.icon.ApacheTomcatIconGroup;
+import consulo.content.bundle.Sdk;
+import consulo.content.bundle.SdkTable;
+import consulo.execution.configuration.ConfigurationFactory;
+import consulo.execution.configuration.ConfigurationType;
+import consulo.execution.configuration.RunConfiguration;
+import consulo.execution.configuration.log.PredefinedLogFile;
+import consulo.jakartaee.web.module.extension.JavaWebModuleExtension;
 import consulo.module.extension.ModuleExtensionHelper;
+import consulo.project.Project;
+import consulo.tomcat.sdk.TomcatSdkType;
 import consulo.ui.image.Image;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author VISTALL
  * @since 04.11.13.
  */
+@ExtensionImpl
 public class TomcatConfigurationType implements ConfigurationType
 {
 	public static final PredefinedLogFile TOMCAT_LOCALHOST_LOG = new PredefinedLogFile("TOMCAT_LOCALHOST_LOG", true);
 
 	private final ConfigurationFactory[] myFactories = new ConfigurationFactory[]{
-			new ConfigurationFactoryEx(this)
+			new ConfigurationFactory(this)
 			{
 				@Override
 				public RunConfiguration createTemplateConfiguration(Project project)
@@ -86,7 +85,7 @@ public class TomcatConfigurationType implements ConfigurationType
 	@Override
 	public Image getIcon()
 	{
-		return TomcatIcons.Tomcat;
+		return ApacheTomcatIconGroup.tomcat();
 	}
 
 	@NotNull

@@ -16,7 +16,7 @@
 
 package consulo.tomcat.run;
 
-import com.intellij.packaging.artifacts.ArtifactPointer;
+import consulo.compiler.artifact.ArtifactPointer;
 
 /**
  * @author VISTALL

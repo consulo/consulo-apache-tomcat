@@ -16,33 +16,37 @@
 
 package consulo.tomcat.run;
 
-import com.intellij.diagnostic.logging.LogConfigurationPanel;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.*;
-import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.options.SettingsEditor;
-import com.intellij.openapi.options.SettingsEditorGroup;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.util.InvalidDataException;
-import com.intellij.openapi.util.WriteExternalException;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import consulo.bundle.SdkUtil;
+import consulo.compiler.artifact.ArtifactPointerUtil;
+import consulo.component.util.pointer.NamedPointer;
 import consulo.container.boot.ContainerPathManager;
-import consulo.packaging.artifacts.ArtifactPointerUtil;
-import consulo.util.pointers.NamedPointer;
+import consulo.content.bundle.Sdk;
+import consulo.content.bundle.SdkUtil;
+import consulo.execution.configuration.*;
+import consulo.execution.configuration.log.LogFileOptions;
+import consulo.execution.configuration.log.PredefinedLogFile;
+import consulo.execution.configuration.log.ui.LogConfigurationPanel;
+import consulo.execution.configuration.ui.SettingsEditor;
+import consulo.execution.configuration.ui.SettingsEditorGroup;
+import consulo.execution.executor.Executor;
+import consulo.execution.runner.ExecutionEnvironment;
+import consulo.module.Module;
+import consulo.module.ModuleManager;
+import consulo.process.ExecutionException;
+import consulo.project.Project;
+import consulo.util.io.FileUtil;
+import consulo.util.lang.StringUtil;
+import consulo.util.xml.serializer.InvalidDataException;
+import consulo.util.xml.serializer.WriteExternalException;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author VISTALL
@@ -75,7 +79,7 @@ public class TomcatConfiguration extends LocatableConfigurationBase implements M
 	@Override
 	public LogFileOptions getOptionsForPredefinedLogFile(PredefinedLogFile predefinedLogFile)
 	{
-		if(predefinedLogFile.equals(TomcatConfigurationType.TOMCAT_LOCALHOST_LOG))
+		if(Objects.equals(predefinedLogFile, TomcatConfigurationType.TOMCAT_LOCALHOST_LOG))
 		{
 			Calendar calendar = Calendar.getInstance();
 
@@ -93,7 +97,19 @@ public class TomcatConfiguration extends LocatableConfigurationBase implements M
 			builder.append(calendar.get(Calendar.DAY_OF_MONTH));
 			builder.append(".log");
 
-			FileUtil.createIfNotExists(new File(builder.toString()));
+			File filePath = new File(builder.toString());
+			if(!filePath.exists())
+			{
+				try
+				{
+					// write empty data
+					FileUtil.writeToFile(filePath, "");
+				}
+				catch(IOException ignored)
+				{
+				}
+			}
+
 			return new LogFileOptions("localhost.log", builder.toString(), true, true, false);
 		}
 		return super.getOptionsForPredefinedLogFile(predefinedLogFile);

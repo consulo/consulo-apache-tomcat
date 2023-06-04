@@ -16,25 +16,26 @@
 
 package consulo.tomcat.run;
 
-import com.intellij.execution.DefaultExecutionResult;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.ExecutionResult;
-import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.DebuggingRunnerData;
-import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.filters.TextConsoleBuilder;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.process.OSProcessHandler;
-import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.execution.runners.ProgramRunner;
-import com.intellij.execution.ui.ConsoleView;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.CharsetToolkit;
-import com.intellij.packaging.artifacts.Artifact;
+import com.intellij.java.execution.configurations.DebuggingRunnerData;
+import consulo.compiler.artifact.Artifact;
 import consulo.container.boot.ContainerPathManager;
+import consulo.content.bundle.Sdk;
+import consulo.execution.DefaultExecutionResult;
+import consulo.execution.ExecutionResult;
+import consulo.execution.configuration.RunProfileState;
+import consulo.execution.executor.Executor;
+import consulo.execution.runner.ExecutionEnvironment;
+import consulo.execution.runner.ProgramRunner;
+import consulo.execution.ui.console.ConsoleView;
+import consulo.execution.ui.console.TextConsoleBuilder;
+import consulo.execution.ui.console.TextConsoleBuilderFactory;
+import consulo.process.ExecutionException;
+import consulo.process.ProcessHandler;
+import consulo.process.ProcessHandlerBuilder;
+import consulo.process.cmd.GeneralCommandLine;
 import consulo.tomcat.sdk.TomcatSdkType;
+import consulo.util.io.FilePermissionCopier;
+import consulo.util.io.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,7 +83,7 @@ public class TomcatRunState implements RunProfileState
 
 		commandLine.setWorkDirectory(sdk.getHomePath());
 
-		OSProcessHandler processHandler = new OSProcessHandler(commandLine.createProcess(), commandLine.toString(), CharsetToolkit.getDefaultSystemCharset());
+		ProcessHandler processHandler = ProcessHandlerBuilder.create(commandLine).build();
 
 		TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myExecutionEnvironment.getProject());
 		ConsoleView console = builder.getConsole();
@@ -107,7 +108,7 @@ public class TomcatRunState implements RunProfileState
 
 		try
 		{
-			FileUtil.copyDir(new File(sdk.getHomePath(), "conf"), new File(tomcatBaseHome, "conf"));
+			FileUtil.copyDir(new File(sdk.getHomePath(), "conf"), new File(tomcatBaseHome, "conf"), FilePermissionCopier.BY_NIO2);
 
 			File webAppsDir = new File(tomcatBaseHome, "webapps");
 			for(TomcatArtifactDeployItem artifactDeployItem : configuration.getDeploymentItems())
@@ -129,7 +130,7 @@ public class TomcatRunState implements RunProfileState
 					outDir = new File(webAppsDir, path);
 				}
 
-				FileUtil.copyDir(new File(artifact.getOutputPath()), outDir);
+				FileUtil.copyDir(new File(artifact.getOutputPath()), outDir, FilePermissionCopier.BY_NIO2);
 			}
 		}
 		catch(IOException e)

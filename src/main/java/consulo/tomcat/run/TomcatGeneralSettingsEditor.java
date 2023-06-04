@@ -16,21 +16,18 @@
 
 package consulo.tomcat.run;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-import org.jetbrains.annotations.NotNull;
+import consulo.configurable.ConfigurationException;
+import consulo.content.bundle.SdkModel;
+import consulo.execution.configuration.ui.SettingsEditor;
+import consulo.ide.setting.ShowSettingsUtil;
+import consulo.module.ui.awt.SdkComboBox;
+import consulo.project.Project;
 import consulo.tomcat.sdk.TomcatSdkType;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SettingsEditor;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
-import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.util.text.StringUtilRt;
-import com.intellij.ui.NumberDocument;
-import consulo.roots.ui.configuration.SdkComboBox;
+import consulo.ui.ex.awt.IntegerField;
+import consulo.util.lang.StringUtil;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 
 /**
  * @author VISTALL
@@ -59,7 +56,7 @@ public class TomcatGeneralSettingsEditor extends SettingsEditor<TomcatConfigurat
 	@Override
 	protected void applyEditorTo(TomcatConfiguration tomcatConfiguration) throws ConfigurationException
 	{
-		tomcatConfiguration.JPDA_ADDRESS = StringUtilRt.parseInt(myJpdaPort.getText(), 0);
+		tomcatConfiguration.JPDA_ADDRESS = StringUtil.parseInt(myJpdaPort.getText(), 0);
 		tomcatConfiguration.setSdkName(myBundleList.getSelectedSdkName());
 	}
 
@@ -72,21 +69,9 @@ public class TomcatGeneralSettingsEditor extends SettingsEditor<TomcatConfigurat
 
 	private void createUIComponents()
 	{
-		ProjectSdksModel model = new ProjectSdksModel();
-		if(!model.isInitialized())
-		{
-			model.reset(myProject);
-		}
+		SdkModel model = ShowSettingsUtil.getInstance().getSdksModel();
 
-		myBundleList = new SdkComboBox(model, new Condition<SdkTypeId>()
-		{
-			@Override
-			public boolean value(SdkTypeId sdkTypeId)
-			{
-				return sdkTypeId == TomcatSdkType.getInstance();
-			}
-		}, false);
-		myJpdaPort = new JTextField();
-		myJpdaPort.setDocument(new NumberDocument());
+		myBundleList = new SdkComboBox(model, sdkTypeId -> sdkTypeId == TomcatSdkType.getInstance(), true);
+		myJpdaPort = new IntegerField();
 	}
 }

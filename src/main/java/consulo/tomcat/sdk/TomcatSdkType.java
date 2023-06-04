@@ -16,31 +16,31 @@
 
 package consulo.tomcat.sdk;
 
-import java.io.File;
-import java.util.Arrays;
-
-import javax.swing.Icon;
-
+import consulo.annotation.component.ExtensionImpl;
+import consulo.apache.tomcat.icon.ApacheTomcatIconGroup;
+import consulo.application.util.SystemInfo;
+import consulo.content.bundle.SdkType;
+import consulo.process.ExecutionException;
+import consulo.process.cmd.GeneralCommandLine;
+import consulo.process.local.ExecUtil;
+import consulo.process.local.ProcessOutput;
+import consulo.ui.image.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import consulo.tomcat.TomcatIcons;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.process.ProcessOutput;
-import com.intellij.execution.util.ExecUtil;
-import com.intellij.openapi.projectRoots.SdkType;
-import com.intellij.openapi.util.SystemInfo;
-import consulo.ui.image.Image;
+
+import java.io.File;
 
 /**
  * @author VISTALL
  * @since 04.11.13.
  */
+@ExtensionImpl
 public class TomcatSdkType extends SdkType
 {
 	@NotNull
 	public static TomcatSdkType getInstance()
 	{
-		return EP_NAME.findExtension(TomcatSdkType.class);
+		return EP_NAME.findExtensionOrFail(TomcatSdkType.class);
 	}
 
 	private static final String VERSION_PREFIX = "Server number:";
@@ -77,11 +77,15 @@ public class TomcatSdkType extends SdkType
 
 	@Nullable
 	@Override
-	public String getVersionString(String s)
+	public String getVersionString(String home)
 	{
 		try
 		{
-			ProcessOutput version = ExecUtil.execAndGetOutput(Arrays.asList(getExecutablePath(s), "version"), s);
+			GeneralCommandLine commandLine = new GeneralCommandLine();
+			commandLine.withExePath(getExecutablePath(home));
+			commandLine.withParameters("version");
+
+			ProcessOutput version = ExecUtil.execAndGetOutput(commandLine);
 			for(String line : version.getStdoutLines())
 			{
 				if(line.startsWith(VERSION_PREFIX))
@@ -114,6 +118,6 @@ public class TomcatSdkType extends SdkType
 	@Override
 	public Image getIcon()
 	{
-		return TomcatIcons.Tomcat;
+		return ApacheTomcatIconGroup.tomcat();
 	}
 }
