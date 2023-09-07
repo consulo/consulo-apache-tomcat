@@ -20,15 +20,14 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.apache.tomcat.icon.ApacheTomcatIconGroup;
 import consulo.content.bundle.Sdk;
 import consulo.content.bundle.SdkTable;
-import consulo.execution.configuration.ConfigurationFactory;
-import consulo.execution.configuration.ConfigurationType;
 import consulo.execution.configuration.RunConfiguration;
+import consulo.execution.configuration.SimpleConfigurationType;
 import consulo.execution.configuration.log.PredefinedLogFile;
 import consulo.jakartaee.web.module.extension.JavaWebModuleExtension;
+import consulo.localize.LocalizeValue;
 import consulo.module.extension.ModuleExtensionHelper;
 import consulo.project.Project;
 import consulo.tomcat.sdk.TomcatSdkType;
-import consulo.ui.image.Image;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -36,68 +35,37 @@ import org.jetbrains.annotations.NotNull;
  * @since 04.11.13.
  */
 @ExtensionImpl
-public class TomcatConfigurationType implements ConfigurationType
+public class TomcatConfigurationType extends SimpleConfigurationType
 {
 	public static final PredefinedLogFile TOMCAT_LOCALHOST_LOG = new PredefinedLogFile("TOMCAT_LOCALHOST_LOG", true);
 
-	private final ConfigurationFactory[] myFactories = new ConfigurationFactory[]{
-			new ConfigurationFactory(this)
-			{
-				@Override
-				public RunConfiguration createTemplateConfiguration(Project project)
-				{
-					return new TomcatConfiguration(project, this, "Unnamed");
-				}
-
-				@Override
-				public boolean isApplicable(@NotNull Project project)
-				{
-					return ModuleExtensionHelper.getInstance(project).hasModuleExtension(JavaWebModuleExtension.class);
-				}
-
-				@Override
-				public void onNewConfigurationCreated(@NotNull RunConfiguration configuration)
-				{
-					TomcatConfiguration tomcatConfiguration = (TomcatConfiguration) configuration;
-					Sdk mostRecentSdkOfType = SdkTable.getInstance().findMostRecentSdkOfType(TomcatSdkType.getInstance());
-					if(mostRecentSdkOfType != null)
-					{
-						tomcatConfiguration.setSdkName(mostRecentSdkOfType.getName());
-					}
-
-					tomcatConfiguration.addPredefinedLogFile(TOMCAT_LOCALHOST_LOG);
-				}
-			}
-	};
-
-	@Override
-	public String getDisplayName()
+	public TomcatConfigurationType()
 	{
-		return "Apache Tomcat";
+		super("#TomcatConfigurationType", LocalizeValue.localizeTODO("Apache Tomcat"), LocalizeValue.localizeTODO("Apache Tomcat run configuration"), ApacheTomcatIconGroup.tomcat());
 	}
 
 	@Override
-	public String getConfigurationTypeDescription()
+	public RunConfiguration createTemplateConfiguration(Project project)
 	{
-		return "Apache Tomcat run configuration";
+		return new TomcatConfiguration(project, this, "Unnamed");
 	}
 
 	@Override
-	public Image getIcon()
+	public boolean isApplicable(@NotNull Project project)
 	{
-		return ApacheTomcatIconGroup.tomcat();
-	}
-
-	@NotNull
-	@Override
-	public String getId()
-	{
-		return "#TomcatConfigurationType";
+		return ModuleExtensionHelper.getInstance(project).hasModuleExtension(JavaWebModuleExtension.class);
 	}
 
 	@Override
-	public ConfigurationFactory[] getConfigurationFactories()
+	public void onNewConfigurationCreated(@NotNull RunConfiguration configuration)
 	{
-		return myFactories;
+		TomcatConfiguration tomcatConfiguration = (TomcatConfiguration) configuration;
+		Sdk mostRecentSdkOfType = SdkTable.getInstance().findMostRecentSdkOfType(TomcatSdkType.getInstance());
+		if(mostRecentSdkOfType != null)
+		{
+			tomcatConfiguration.setSdkName(mostRecentSdkOfType.getName());
+		}
+
+		tomcatConfiguration.addPredefinedLogFile(TOMCAT_LOCALHOST_LOG);
 	}
 }
