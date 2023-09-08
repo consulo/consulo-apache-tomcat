@@ -22,8 +22,8 @@ import consulo.application.util.SystemInfo;
 import consulo.content.bundle.SdkType;
 import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
-import consulo.process.local.ExecUtil;
-import consulo.process.local.ProcessOutput;
+import consulo.process.util.CapturingProcessUtil;
+import consulo.process.util.ProcessOutput;
 import consulo.ui.image.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -85,7 +85,7 @@ public class TomcatSdkType extends SdkType
 			commandLine.withExePath(getExecutablePath(home));
 			commandLine.withParameters("version");
 
-			ProcessOutput version = ExecUtil.execAndGetOutput(commandLine);
+			ProcessOutput version = CapturingProcessUtil.execAndGetOutput(commandLine);
 			for(String line : version.getStdoutLines())
 			{
 				if(line.startsWith(VERSION_PREFIX))
