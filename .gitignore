@@ -2,3 +2,4 @@
 .consulo/
 /dep
 target/
+sandbox/

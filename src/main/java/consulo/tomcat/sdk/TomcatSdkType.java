@@ -18,6 +18,7 @@ package consulo.tomcat.sdk;
 
 import consulo.annotation.component.ExtensionImpl;
 import consulo.apache.tomcat.icon.ApacheTomcatIconGroup;
+import consulo.application.Application;
 import consulo.application.util.SystemInfo;
 import consulo.content.bundle.SdkType;
 import consulo.process.ExecutionException;
@@ -25,6 +26,7 @@ import consulo.process.cmd.GeneralCommandLine;
 import consulo.process.util.CapturingProcessUtil;
 import consulo.process.util.ProcessOutput;
 import consulo.ui.image.Image;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,89 +37,74 @@ import java.io.File;
  * @since 04.11.13.
  */
 @ExtensionImpl
-public class TomcatSdkType extends SdkType
-{
-	@NotNull
-	public static TomcatSdkType getInstance()
-	{
-		return EP_NAME.findExtensionOrFail(TomcatSdkType.class);
-	}
+public class TomcatSdkType extends SdkType {
+    @NotNull
+    public static TomcatSdkType getInstance() {
+        return Application.get().getExtensionPoint(SdkType.class).findExtensionOrFail(TomcatSdkType.class);
+    }
 
-	private static final String VERSION_PREFIX = "Server number:";
+    private static final String VERSION_PREFIX = "Server number:";
 
-	public TomcatSdkType()
-	{
-		super("APACHE_TOMCAT_SDK");
-	}
+    public TomcatSdkType() {
+        super("APACHE_TOMCAT_SDK");
+    }
 
-	public static String getExecutablePath(String home)
-	{
-		StringBuilder builder = new StringBuilder();
-		builder.append(home);
-		builder.append(File.separator);
-		builder.append("bin");
-		builder.append(File.separator);
-		builder.append("catalina");
-		if(SystemInfo.isWindows)
-		{
-			builder.append(".bat");
-		}
-		else
-		{
-			builder.append(".sh");
-		}
-		return builder.toString();
-	}
+    public static String getExecutablePath(String home) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(home);
+        builder.append(File.separator);
+        builder.append("bin");
+        builder.append(File.separator);
+        builder.append("catalina");
+        if (SystemInfo.isWindows) {
+            builder.append(".bat");
+        }
+        else {
+            builder.append(".sh");
+        }
+        return builder.toString();
+    }
 
-	@Override
-	public boolean isValidSdkHome(String s)
-	{
-		return new File(getExecutablePath(s)).exists();
-	}
+    @Override
+    public boolean isValidSdkHome(String s) {
+        return new File(getExecutablePath(s)).exists();
+    }
 
-	@Nullable
-	@Override
-	public String getVersionString(String home)
-	{
-		try
-		{
-			GeneralCommandLine commandLine = new GeneralCommandLine();
-			commandLine.withExePath(getExecutablePath(home));
-			commandLine.withParameters("version");
+    @Nullable
+    @Override
+    public String getVersionString(String home) {
+        try {
+            GeneralCommandLine commandLine = new GeneralCommandLine();
+            commandLine.withExePath(getExecutablePath(home));
+            commandLine.withParameters("version");
 
-			ProcessOutput version = CapturingProcessUtil.execAndGetOutput(commandLine);
-			for(String line : version.getStdoutLines())
-			{
-				if(line.startsWith(VERSION_PREFIX))
-				{
-					return line.substring(VERSION_PREFIX.length(), line.length()).trim();
-				}
-			}
-			return "Unknown";
-		}
-		catch(ExecutionException e)
-		{
-			return null;
-		}
-	}
+            ProcessOutput version = CapturingProcessUtil.execAndGetOutput(commandLine);
+            for (String line : version.getStdoutLines()) {
+                if (line.startsWith(VERSION_PREFIX)) {
+                    return line.substring(VERSION_PREFIX.length(), line.length()).trim();
+                }
+            }
+            return "Unknown";
+        }
+        catch (ExecutionException e) {
+            return null;
+        }
+    }
 
-	@Override
-	public String suggestSdkName(String s, String s2)
-	{
-		return "apache-tomcat";
-	}
+    @Override
+    public String suggestSdkName(String s, String s2) {
+        return "apache-tomcat";
+    }
 
-	@NotNull
-	@Override
-	public String getPresentableName()
-	{
-		return "Apache Tomcat";
-	}
+    @NotNull
+    @Override
+    public String getPresentableName() {
+        return "Apache Tomcat";
+    }
 
-	@Nullable
-	@Override
-	public Image getIcon()
-	{
-		return ApacheTomcatIconGroup.tomcat();
-	}
+    @Nonnull
+    @Override
+    public Image getIcon() {
+        return ApacheTomcatIconGroup.tomcat();
+    }
 }
