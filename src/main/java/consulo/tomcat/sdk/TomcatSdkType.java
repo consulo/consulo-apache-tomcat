@@ -21,6 +21,7 @@ import consulo.apache.tomcat.icon.ApacheTomcatIconGroup;
 import consulo.application.Application;
 import consulo.application.util.SystemInfo;
 import consulo.content.bundle.SdkType;
+import consulo.localize.LocalizeValue;
 import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
 import consulo.process.util.CapturingProcessUtil;
@@ -46,7 +47,7 @@ public class TomcatSdkType extends SdkType {
     private static final String VERSION_PREFIX = "Server number:";
 
     public TomcatSdkType() {
-        super("APACHE_TOMCAT_SDK");
+        super("APACHE_TOMCAT_SDK", LocalizeValue.localizeTODO("Apache Tomcat"), ApacheTomcatIconGroup.tomcat());
     }
 
     public static String getExecutablePath(String home) {
@@ -89,22 +90,5 @@ public class TomcatSdkType extends SdkType {
         catch (ExecutionException e) {
             return null;
         }
-    }
-
-    @Override
-    public String suggestSdkName(String s, String s2) {
-        return "apache-tomcat";
-    }
-
-    @NotNull
-    @Override
-    public String getPresentableName() {
-        return "Apache Tomcat";
-    }
-
-    @Nonnull
-    @Override
-    public Image getIcon() {
-        return ApacheTomcatIconGroup.tomcat();
     }
 }
