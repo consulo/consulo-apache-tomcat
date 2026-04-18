@@ -26,8 +26,6 @@ import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
 import consulo.process.util.CapturingProcessUtil;
 import consulo.process.util.ProcessOutput;
-import consulo.ui.image.Image;
-import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
