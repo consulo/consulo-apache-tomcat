@@ -15,13 +15,13 @@
   -->
 
 <consulo-plugin url="https://github.com/consulo/consulo-apache-tomcat">
-	<id>consulo.apache.tomcat</id>
-	<name>Apache Tomcat</name>
-	<depends>consulo.java</depends>
-	<depends>consulo.javaee</depends>
-	<version>SNAPSHOT</version>
+    <id>consulo.apache.tomcat</id>
+    <name>Apache Tomcat</name>
+    <depends>consulo.java</depends>
+    <depends>consulo.jakarta.web</depends>
+    <version>SNAPSHOT</version>
 
-	<tags>
-		<tag>web.server</tag>
-	</tags>
+    <tags>
+        <tag>web.server</tag>
+    </tags>
 </consulo-plugin>
