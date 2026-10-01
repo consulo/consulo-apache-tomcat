@@ -28,7 +28,7 @@ import consulo.localize.LocalizeValue;
 import consulo.module.extension.ModuleExtensionHelper;
 import consulo.project.Project;
 import consulo.tomcat.sdk.TomcatSdkType;
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
@@ -51,13 +51,13 @@ public class TomcatConfigurationType extends SimpleConfigurationType
 	}
 
 	@Override
-	public boolean isApplicable(@NotNull Project project)
+	public boolean isApplicable(@Nonnull Project project)
 	{
 		return ModuleExtensionHelper.getInstance(project).hasModuleExtension(JavaWebModuleExtension.class);
 	}
 
 	@Override
-	public void onNewConfigurationCreated(@NotNull RunConfiguration configuration)
+	public void onNewConfigurationCreated(@Nonnull RunConfiguration configuration)
 	{
 		TomcatConfiguration tomcatConfiguration = (TomcatConfiguration) configuration;
 		Sdk mostRecentSdkOfType = SdkTable.getInstance().findMostRecentSdkOfType(TomcatSdkType.getInstance());

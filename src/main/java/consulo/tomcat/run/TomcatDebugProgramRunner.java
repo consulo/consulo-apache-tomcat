@@ -25,8 +25,8 @@ import consulo.execution.debug.DefaultDebugExecutor;
 import consulo.execution.runner.ExecutionEnvironment;
 import consulo.execution.ui.RunContentDescriptor;
 import consulo.process.ExecutionException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 @ExtensionImpl(order = "before defaultDebugRunner")
 public class TomcatDebugProgramRunner extends GenericDebuggerRunner
 {
-	@NotNull
+	@Nonnull
 	@Override
 	public String getRunnerId()
 	{
@@ -43,14 +43,14 @@ public class TomcatDebugProgramRunner extends GenericDebuggerRunner
 	}
 
 	@Override
-	public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile)
+	public boolean canRun(@Nonnull String executorId, @Nonnull RunProfile profile)
 	{
 		return profile instanceof TomcatConfiguration && DefaultDebugExecutor.EXECUTOR_ID.equals(executorId);
 	}
 
 	@Nullable
 	@Override
-	protected RunContentDescriptor createContentDescriptor(@NotNull RunProfileState state, @NotNull ExecutionEnvironment env) throws ExecutionException
+	protected RunContentDescriptor createContentDescriptor(@Nonnull RunProfileState state, @Nonnull ExecutionEnvironment env) throws ExecutionException
 	{
 		TomcatConfiguration runProfile = (TomcatConfiguration) env.getRunProfile();
 		RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", String.valueOf(runProfile.JPDA_ADDRESS), false);

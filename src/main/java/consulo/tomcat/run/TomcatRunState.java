@@ -36,8 +36,8 @@ import consulo.process.cmd.GeneralCommandLine;
 import consulo.tomcat.sdk.TomcatSdkType;
 import consulo.util.io.FilePermissionCopier;
 import consulo.util.io.FileUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +57,7 @@ public class TomcatRunState implements RunProfileState
 
 	@Nullable
 	@Override
-	public ExecutionResult execute(Executor executor, @NotNull ProgramRunner programRunner) throws ExecutionException
+	public ExecutionResult execute(Executor executor, @Nonnull ProgramRunner programRunner) throws ExecutionException
 	{
 		TomcatConfiguration runProfile = (TomcatConfiguration) myExecutionEnvironment.getRunProfile();
 		Sdk sdk = runProfile.getSdk();

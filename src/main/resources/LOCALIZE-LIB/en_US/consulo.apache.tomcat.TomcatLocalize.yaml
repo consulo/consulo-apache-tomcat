@@ -1,0 +1,14 @@
+run.configuration.tab.general:
+    text: General
+run.configuration.tab.deployment:
+    text: Deployment
+run.configuration.label.bundle:
+    text: 'Bundle:'
+run.configuration.label.jpda.port:
+    text: 'JPDA Port:'
+run.configuration.column.artifact:
+    text: Artifact
+run.configuration.column.path:
+    text: Path
+run.configuration.title.choose.artifact:
+    text: Choose Artifact

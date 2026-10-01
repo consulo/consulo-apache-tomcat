@@ -26,8 +26,8 @@ import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
 import consulo.process.util.CapturingProcessUtil;
 import consulo.process.util.ProcessOutput;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import java.io.File;
 
@@ -37,7 +37,7 @@ import java.io.File;
  */
 @ExtensionImpl
 public class TomcatSdkType extends SdkType {
-    @NotNull
+    @Nonnull
     public static TomcatSdkType getInstance() {
         return Application.get().getExtensionPoint(SdkType.class).findExtensionOrFail(TomcatSdkType.class);
     }

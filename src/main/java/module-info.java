@@ -11,7 +11,6 @@ module consulo.apache.tomcat {
     requires consulo.container.api;
     requires consulo.execution.api;
     requires consulo.execution.debug.api;
-    requires consulo.ide.api;
     requires consulo.localize.api;
     requires consulo.module.api;
     requires consulo.module.ui.api;
@@ -19,7 +18,6 @@ module consulo.apache.tomcat {
     requires consulo.project.api;
     requires consulo.ui.api;
     requires consulo.ui.ex.api;
-    requires consulo.ui.ex.awt.api;
     requires consulo.util.io;
     requires consulo.util.lang;
     requires consulo.util.xml.serializer;
@@ -35,7 +33,5 @@ module consulo.apache.tomcat {
     requires consulo.jakartaee.web.api;
     requires consulo.jakartaee.web.impl;
 
-    // TODO remove in future
-    requires java.desktop;
-    requires forms.rt;
+    exports consulo.apache.tomcat.localize;
 }

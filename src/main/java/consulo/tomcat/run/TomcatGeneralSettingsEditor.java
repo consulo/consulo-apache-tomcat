@@ -16,18 +16,19 @@
 
 package consulo.tomcat.run;
 
+import consulo.apache.tomcat.localize.TomcatLocalize;
 import consulo.configurable.ConfigurationException;
-import consulo.content.bundle.SdkModel;
 import consulo.execution.configuration.ui.SettingsEditor;
-import consulo.ide.setting.ShowSettingsUtil;
-import consulo.module.ui.awt.SdkComboBox;
-import consulo.project.Project;
+import consulo.module.ui.BundleBox;
+import consulo.module.ui.BundleBoxBuilder;
 import consulo.tomcat.sdk.TomcatSdkType;
-import consulo.ui.ex.awt.IntegerField;
-import consulo.util.lang.StringUtil;
-import org.jetbrains.annotations.NotNull;
+import consulo.ui.Component;
+import consulo.ui.IntBox;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.util.FormBuilder;
+import jakarta.annotation.Nullable;
 
-import javax.swing.*;
+import java.util.Objects;
 
 /**
  * @author VISTALL
@@ -35,43 +36,65 @@ import javax.swing.*;
  */
 public class TomcatGeneralSettingsEditor extends SettingsEditor<TomcatConfiguration>
 {
-	private JPanel myRoot;
-	private SdkComboBox myBundleList;
-	private JTextField myJpdaPort;
+	private static final int MAX_PORT = 65535;
 
-	private Project myProject;
+	@Nullable
+	private BundleBox myBundleBox;
+	@Nullable
+	private IntBox myJpdaPortBox;
 
-	public TomcatGeneralSettingsEditor(Project project)
+	@Override
+	@RequiredUIAccess
+	protected Component createUIComponent()
 	{
-		myProject = project;
+		BundleBox bundleBox = BundleBoxBuilder.create(this)
+				.withSdkTypeFilterByType(TomcatSdkType.getInstance())
+				.withNoneItem()
+				.build();
+		myBundleBox = bundleBox;
+
+		IntBox jpdaPortBox = IntBox.create(TomcatConfiguration.DEFAULT_JPDA_ADDRESS).withRange(0, MAX_PORT);
+		myJpdaPortBox = jpdaPortBox;
+
+		return FormBuilder.create()
+				.addLabeled(TomcatLocalize.runConfigurationLabelBundle(), bundleBox.getComponent())
+				.addLabeled(TomcatLocalize.runConfigurationLabelJpdaPort(), jpdaPortBox)
+				.build();
 	}
 
 	@Override
+	@RequiredUIAccess
 	protected void resetEditorFrom(TomcatConfiguration tomcatConfiguration)
 	{
-		myJpdaPort.setText(String.valueOf(tomcatConfiguration.JPDA_ADDRESS));
-		myBundleList.setSelectedSdk(tomcatConfiguration.getSdkName());
+		BundleBox bundleBox = myBundleBox;
+		IntBox jpdaPortBox = myJpdaPortBox;
+		if(bundleBox == null || jpdaPortBox == null)
+		{
+			return;
+		}
+
+		jpdaPortBox.setValue(tomcatConfiguration.JPDA_ADDRESS, false);
+		bundleBox.setSelectedBundle(tomcatConfiguration.getSdkName());
 	}
 
 	@Override
+	@RequiredUIAccess
 	protected void applyEditorTo(TomcatConfiguration tomcatConfiguration) throws ConfigurationException
 	{
-		tomcatConfiguration.JPDA_ADDRESS = StringUtil.parseInt(myJpdaPort.getText(), 0);
-		tomcatConfiguration.setSdkName(myBundleList.getSelectedSdkName());
-	}
+		BundleBox bundleBox = myBundleBox;
+		IntBox jpdaPortBox = myJpdaPortBox;
+		if(bundleBox == null || jpdaPortBox == null)
+		{
+			return;
+		}
 
-	@NotNull
-	@Override
-	protected JComponent createEditor()
-	{
-		return myRoot;
-	}
+		Integer jpdaPort = jpdaPortBox.getValue();
+		tomcatConfiguration.JPDA_ADDRESS = jpdaPort == null ? 0 : jpdaPort;
 
-	private void createUIComponents()
-	{
-		SdkModel model = ShowSettingsUtil.getInstance().getSdksModel();
-
-		myBundleList = new SdkComboBox(model, sdkTypeId -> sdkTypeId == TomcatSdkType.getInstance(), true);
-		myJpdaPort = new IntegerField();
+		String sdkName = bundleBox.getSelectedBundleName();
+		if(!Objects.equals(sdkName, tomcatConfiguration.getSdkName()))
+		{
+			tomcatConfiguration.setSdkName(sdkName);
+		}
 	}
 }

@@ -16,30 +16,44 @@
 
 package consulo.tomcat.run;
 
-import consulo.application.AllIcons;
+import consulo.apache.tomcat.localize.TomcatLocalize;
 import consulo.compiler.artifact.Artifact;
 import consulo.compiler.artifact.ArtifactManager;
-import consulo.compiler.artifact.ArtifactPointerUtil;
-import consulo.compiler.artifact.ui.awt.ChooseArtifactsDialog;
+import consulo.compiler.artifact.ArtifactPointer;
+import consulo.compiler.artifact.ArtifactPointerManager;
 import consulo.configurable.ConfigurationException;
-import consulo.content.bundle.SdkModel;
 import consulo.execution.configuration.ui.SettingsEditor;
-import consulo.ide.setting.ShowSettingsUtil;
 import consulo.javaee.artifact.ExplodedWarArtifactType;
+import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
-import consulo.ui.ex.SimpleTextAttributes;
-import consulo.ui.ex.awt.ColoredTableCellRenderer;
-import consulo.ui.ex.awt.ColumnInfo;
-import consulo.ui.ex.awt.ToolbarDecorator;
-import consulo.ui.ex.awt.table.JBTable;
-import consulo.ui.ex.awt.table.ListTableModel;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import consulo.ui.Component;
+import consulo.ui.SelectionMode;
+import consulo.ui.Table;
+import consulo.ui.TableItemEditor;
+import consulo.ui.TextAttribute;
+import consulo.ui.TextBox;
+import consulo.ui.TextItemPresentation;
+import consulo.ui.ValueComponent;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.popup.JBPopupFactory;
+import consulo.ui.ex.popup.MultiSelectionListPopupStep;
+import consulo.ui.ex.popup.PopupStep;
+import consulo.ui.ex.toolbar.AddAction;
+import consulo.ui.ex.toolbar.DownMoveAction;
+import consulo.ui.ex.toolbar.EditAction;
+import consulo.ui.ex.toolbar.ToolbarDecoratorBuilderFactory;
+import consulo.ui.ex.toolbar.UpMoveAction;
+import consulo.ui.image.Image;
+import consulo.ui.model.FlatDataModel;
+import consulo.ui.model.MutableFlatDataModel;
+import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nullable;
 
-import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author VISTALL
@@ -47,12 +61,12 @@ import java.util.List;
  */
 public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfiguration>
 {
-	private JPanel myRoot;
+	private final Project myProject;
 
-	private Project myProject;
+	private final MutableFlatDataModel<TomcatArtifactDeployItem> myItems = FlatDataModel.of(List.of());
 
-	private List<TomcatArtifactDeployItem> myItems;
-	private ListTableModel<TomcatArtifactDeployItem> myModel;
+	@Nullable
+	private Table<TomcatArtifactDeployItem> myTable;
 
 	public TomcatDeploymentSettingsEditor(Project project)
 	{
@@ -60,11 +74,75 @@ public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfigu
 	}
 
 	@Override
+	@RequiredUIAccess
+	protected Component createUIComponent()
+	{
+		Table<TomcatArtifactDeployItem> table = Table.create(myItems);
+		table.setSelectionMode(SelectionMode.MULTIPLE);
+
+		table.addColumn(TomcatLocalize.runConfigurationColumnArtifact(), item -> item)
+				.setRender((presentation, value) -> renderArtifact(presentation, value.getValue()));
+
+		table.addColumn(TomcatLocalize.runConfigurationColumnPath(), TomcatArtifactDeployItem::getPath)
+				.setEditor(new TableItemEditor<>()
+				{
+					@Override
+					@RequiredUIAccess
+					public ValueComponent<String> createComponent(TomcatArtifactDeployItem item)
+					{
+						return TextBox.create(StringUtil.notNullize(item.getPath()));
+					}
+
+					@Override
+					@RequiredUIAccess
+					public void commit(TomcatArtifactDeployItem item, @Nullable String value)
+					{
+						item.setPath(StringUtil.notNullize(value));
+					}
+				});
+		myTable = table;
+
+		return ToolbarDecoratorBuilderFactory.getInstance()
+				.create(table)
+				.addOrReplaceAction(new DeployItemAddAction())
+				.disableAction(EditAction.class)
+				.disableAction(UpMoveAction.class)
+				.disableAction(DownMoveAction.class)
+				.build();
+	}
+
+	@RequiredUIAccess
+	private static void renderArtifact(TextItemPresentation presentation, @Nullable TomcatArtifactDeployItem item)
+	{
+		if(item == null)
+		{
+			return;
+		}
+
+		ArtifactPointer artifactPointer = item.getArtifactPointer();
+		Artifact artifact = artifactPointer.get();
+		if(artifact != null)
+		{
+			presentation.withIcon(artifact.getArtifactType().getIcon());
+			presentation.append(artifact.getName());
+		}
+		else
+		{
+			presentation.withIcon(PlatformIconGroup.toolbarUnknown());
+			presentation.append(artifactPointer.getName(), TextAttribute.ERROR);
+		}
+	}
+
+	@Override
+	@RequiredUIAccess
 	protected void resetEditorFrom(TomcatConfiguration tomcatConfiguration)
 	{
-		myItems.clear();
-		myItems.addAll(tomcatConfiguration.getDeploymentItems());
-		myModel.fireTableDataChanged();
+		List<TomcatArtifactDeployItem> items = new ArrayList<>();
+		for(TomcatArtifactDeployItem item : tomcatConfiguration.getDeploymentItems())
+		{
+			items.add(item.clone());
+		}
+		myItems.replaceAll(items);
 	}
 
 	@Override
@@ -72,144 +150,96 @@ public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfigu
 	{
 		List<TomcatArtifactDeployItem> deploymentItems = tomcatConfiguration.getDeploymentItems();
 		deploymentItems.clear();
-		deploymentItems.addAll(myItems);
+		for(TomcatArtifactDeployItem item : myItems)
+		{
+			deploymentItems.add(item.clone());
+		}
 	}
 
-	@NotNull
-	@Override
-	protected JComponent createEditor()
+	private List<Artifact> collectDeployableArtifacts()
 	{
-		createUIComponents();
-		return myRoot;
+		Set<Artifact> deployed = new HashSet<>();
+		for(TomcatArtifactDeployItem item : myItems)
+		{
+			Artifact artifact = item.getArtifactPointer().get();
+			if(artifact != null)
+			{
+				deployed.add(artifact);
+			}
+		}
+
+		List<Artifact> artifacts = new ArrayList<>();
+		for(Artifact artifact : ArtifactManager.getInstance(myProject).getArtifacts())
+		{
+			if(artifact.getArtifactType() == ExplodedWarArtifactType.getInstance() && !deployed.contains(artifact))
+			{
+				artifacts.add(artifact);
+			}
+		}
+		artifacts.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+		return artifacts;
 	}
 
-	private void createUIComponents()
+	@RequiredUIAccess
+	private void addArtifacts(List<Artifact> artifacts)
 	{
-		SdkModel model = ShowSettingsUtil.getInstance().getSdksModel();
-		myItems = new ArrayList<TomcatArtifactDeployItem>();
-		myModel = new ListTableModel<TomcatArtifactDeployItem>(new ColumnInfo[]{
-				new ColumnInfo<TomcatArtifactDeployItem, TomcatArtifactDeployItem>("Artifact")
-				{
-					@Nullable
-					@Override
-					public TableCellRenderer getRenderer(TomcatArtifactDeployItem tomcatArtifactDeployItem)
-					{
-						return new ColoredTableCellRenderer()
-						{
-							@Override
-							protected void customizeCellRenderer(JTable jTable, Object o, boolean b, boolean b2, int i, int i2)
-							{
-								TomcatArtifactDeployItem artifactDeployItem = (TomcatArtifactDeployItem) o;
-								Artifact artifact = artifactDeployItem.getArtifactPointer().get();
-								if(artifact != null)
-								{
-									append(artifact.getName());
-									setIcon(artifact.getArtifactType().getIcon());
-								}
-								else
-								{
-									append(artifactDeployItem.getArtifactPointer().getName(), SimpleTextAttributes.ERROR_ATTRIBUTES);
-									setIcon(AllIcons.Toolbar.Unknown);
-								}
-							}
-						};
-					}
-
-					@Nullable
-					@Override
-					public TomcatArtifactDeployItem valueOf(TomcatArtifactDeployItem o)
-					{
-						return o;
-					}
-				},
-				new ColumnInfo<TomcatArtifactDeployItem, String>("Path")
-				{
-					@Nullable
-					@Override
-					public TableCellRenderer getRenderer(TomcatArtifactDeployItem tomcatArtifactDeployItem)
-					{
-						return new ColoredTableCellRenderer()
-						{
-							@Override
-							protected void customizeCellRenderer(JTable jTable, Object o, boolean b, boolean b2, int i, int i2)
-							{
-								append((String) o);
-							}
-						};
-					}
-
-					@Override
-					public boolean isCellEditable(TomcatArtifactDeployItem tomcatArtifactDeployItem)
-					{
-						return true;
-					}
-
-					@Override
-					public void setValue(TomcatArtifactDeployItem tomcatArtifactDeployItem, String value)
-					{
-						tomcatArtifactDeployItem.setPath(value);
-					}
-
-					@Nullable
-					@Override
-					public String valueOf(TomcatArtifactDeployItem o)
-					{
-						return o.getPath();
-					}
-				}
-		}, myItems, 0);
-
-		JBTable table = new JBTable(myModel)
+		ArtifactPointerManager pointerManager = ArtifactPointerManager.getInstance(myProject);
+		TomcatArtifactDeployItem lastItem = null;
+		for(Artifact artifact : artifacts)
 		{
-			@Override
-			public TableCellRenderer getCellRenderer(final int row, final int column)
-			{
-				final ColumnInfo columnInfo = ((ListTableModel) getModel()).getColumnInfos()[column];
-				assert columnInfo != null;
-				//noinspection unchecked
-				return columnInfo.getRenderer(((ListTableModel) getModel()).getItem(row));
-			}
-		};
+			lastItem = new TomcatArtifactDeployItem(pointerManager.create(artifact), artifact.getName() + "/");
+			myItems.add(lastItem);
+		}
 
-		ToolbarDecorator toolbarDecorator = ToolbarDecorator.createDecorator(table);
-		toolbarDecorator.setAddAction(e ->
+		Table<TomcatArtifactDeployItem> table = myTable;
+		if(table != null && lastItem != null)
 		{
-			Artifact[] artifacts = ArtifactManager.getInstance(myProject).getArtifacts();
+			table.select(lastItem);
+		}
+	}
 
-			List<Artifact> listArtifacts = new ArrayList<Artifact>(artifacts.length);
-			loop:
-			for(Artifact artifact : artifacts)
+	private class DeployItemAddAction extends AddAction<TomcatArtifactDeployItem>
+	{
+		@Override
+		@RequiredUIAccess
+		protected void doAdd(AnActionEvent e)
+		{
+			List<Artifact> artifacts = collectDeployableArtifacts();
+			if(artifacts.isEmpty())
 			{
-				if(artifact.getArtifactType() != ExplodedWarArtifactType.getInstance())
-				{
-					continue;
-				}
-
-				for(TomcatArtifactDeployItem item : myItems)
-				{
-					Artifact tempArtifact = item.getArtifactPointer().get();
-					if(tempArtifact.equals(artifact))
-					{
-						continue loop;
-					}
-				}
-
-				listArtifacts.add(artifact);
+				return;
 			}
-			ChooseArtifactsDialog dialog = new ChooseArtifactsDialog(myProject, listArtifacts, "Choose Artifact", null);
-			dialog.show();
 
-			if(dialog.isOK())
+			String title = TomcatLocalize.runConfigurationTitleChooseArtifact().get();
+			MultiSelectionListPopupStep<Artifact> step = new MultiSelectionListPopupStep<>(title, artifacts)
 			{
-				for(Artifact artifact : dialog.getChosenElements())
+				@Override
+				public String getTextFor(Artifact value)
 				{
-					myModel.addRow(new TomcatArtifactDeployItem(ArtifactPointerUtil.getPointerManager(myProject).create(artifact), artifact.getName() + "/"));
+					return value.getName();
 				}
-			}
-		});
 
-		toolbarDecorator.disableUpDownActions();
+				@Override
+				public Image getIconFor(Artifact value)
+				{
+					return value.getArtifactType().getIcon();
+				}
 
-		myRoot = toolbarDecorator.createPanel();
+				@Override
+				public boolean isSpeedSearchEnabled()
+				{
+					return true;
+				}
+
+				@Override
+				@RequiredUIAccess
+				public PopupStep<?> onChosen(List<Artifact> selectedValues, boolean finalChoice)
+				{
+					return doFinalStep(() -> addArtifacts(selectedValues));
+				}
+			};
+
+			JBPopupFactory.getInstance().createListPopup(myProject, step).showUnderneathOf(e);
+		}
 	}
 }
