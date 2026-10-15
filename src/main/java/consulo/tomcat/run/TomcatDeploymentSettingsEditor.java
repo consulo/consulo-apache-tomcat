@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.tomcat.run;
 
 import consulo.apache.tomcat.localize.TomcatLocalize;
@@ -26,13 +25,23 @@ import consulo.execution.configuration.ui.SettingsEditor;
 import consulo.javaee.artifact.ExplodedWarArtifactType;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
-import consulo.ui.*;
+import consulo.ui.Component;
+import consulo.ui.Table;
+import consulo.ui.TableItemEditor;
+import consulo.ui.TextAttribute;
+import consulo.ui.TextBox;
+import consulo.ui.TextItemPresentation;
+import consulo.ui.ValueComponent;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.popup.JBPopupFactory;
 import consulo.ui.ex.popup.MultiSelectionListPopupStep;
 import consulo.ui.ex.popup.PopupStep;
-import consulo.ui.ex.toolbar.*;
+import consulo.ui.ex.toolbar.AddAction;
+import consulo.ui.ex.toolbar.DownMoveAction;
+import consulo.ui.ex.toolbar.EditAction;
+import consulo.ui.ex.toolbar.ToolbarDecoratorBuilderFactory;
+import consulo.ui.ex.toolbar.UpMoveAction;
 import consulo.ui.image.Image;
 import consulo.ui.model.FlatDataModel;
 import consulo.ui.model.MutableFlatDataModel;
@@ -46,7 +55,7 @@ import java.util.Set;
 
 /**
  * @author VISTALL
- * @since 04.11.13.
+ * @since 2013-11-04
  */
 public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfiguration> {
     private final Project myProject;
@@ -67,7 +76,7 @@ public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfigu
         table.setAllowMultipleSelect(true);
 
         table.addColumn(TomcatLocalize.runConfigurationColumnArtifact(), item -> item)
-            .setRender((presentation, value) -> renderArtifact(presentation, value.getValue()));
+            .setRenderer((presentation, value) -> renderArtifact(presentation, value.getValue()));
 
         table.addColumn(TomcatLocalize.runConfigurationColumnPath(), TomcatArtifactDeployItem::getPath)
             .setEditor(new TableItemEditor<>() {
