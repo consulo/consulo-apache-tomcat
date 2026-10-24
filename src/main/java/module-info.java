@@ -34,4 +34,6 @@ module consulo.apache.tomcat {
     requires consulo.jakartaee.web.impl;
 
     exports consulo.apache.tomcat.localize;
+
+    opens consulo.tomcat.run to consulo.util.xml.serializer, consulo.execution.api;
 }

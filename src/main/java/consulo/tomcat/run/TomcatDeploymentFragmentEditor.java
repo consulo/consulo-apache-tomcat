@@ -20,8 +20,8 @@ import consulo.compiler.artifact.Artifact;
 import consulo.compiler.artifact.ArtifactManager;
 import consulo.compiler.artifact.ArtifactPointer;
 import consulo.compiler.artifact.ArtifactPointerManager;
-import consulo.configurable.ConfigurationException;
-import consulo.execution.configuration.ui.SettingsEditor;
+import consulo.execution.configuration.fragment.RunConfigurationFragmentEditor;
+import consulo.execution.configuration.fragment.RunConfigurationFragmentLayout;
 import consulo.javaee.artifact.ExplodedWarArtifactType;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
@@ -57,21 +57,17 @@ import java.util.Set;
  * @author VISTALL
  * @since 2013-11-04
  */
-public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfiguration> {
+final class TomcatDeploymentFragmentEditor implements RunConfigurationFragmentEditor<TomcatConfiguration> {
     private final Project myProject;
 
     private final MutableFlatDataModel<TomcatArtifactDeployItem> myItems = FlatDataModel.of(List.of());
 
-    @Nullable
-    private Table<TomcatArtifactDeployItem> myTable;
+    private final Table<TomcatArtifactDeployItem> myTable;
+    private final Component myComponent;
 
-    public TomcatDeploymentSettingsEditor(Project project) {
-        myProject = project;
-    }
-
-    @Override
     @RequiredUIAccess
-    protected Component createUIComponent() {
+    TomcatDeploymentFragmentEditor(Project project) {
+        myProject = project;
         Table<TomcatArtifactDeployItem> table = Table.create(myItems);
         table.setAllowMultipleSelect(true);
 
@@ -94,7 +90,7 @@ public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfigu
             });
         myTable = table;
 
-        return ToolbarDecoratorBuilderFactory.getInstance()
+        myComponent = ToolbarDecoratorBuilderFactory.getInstance()
             .create(table)
             .addOrReplaceAction(new DeployItemAddAction())
             .disableAction(EditAction.class)
@@ -121,9 +117,15 @@ public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfigu
         }
     }
 
+    @RequiredUIAccess
+    @Override
+    public void addRows(RunConfigurationFragmentLayout layout) {
+        layout.addBottom(myComponent);
+    }
+
     @Override
     @RequiredUIAccess
-    protected void resetEditorFrom(TomcatConfiguration tomcatConfiguration) {
+    public void reset(TomcatConfiguration tomcatConfiguration) {
         List<TomcatArtifactDeployItem> items = new ArrayList<>();
         for (TomcatArtifactDeployItem item : tomcatConfiguration.getDeploymentItems()) {
             items.add(item.clone());
@@ -132,12 +134,13 @@ public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfigu
     }
 
     @Override
-    protected void applyEditorTo(TomcatConfiguration tomcatConfiguration) throws ConfigurationException {
-        List<TomcatArtifactDeployItem> deploymentItems = tomcatConfiguration.getDeploymentItems();
-        deploymentItems.clear();
+    @RequiredUIAccess
+    public void apply(TomcatConfiguration tomcatConfiguration) {
+        List<TomcatArtifactDeployItem> deploymentItems = new ArrayList<>();
         for (TomcatArtifactDeployItem item : myItems) {
             deploymentItems.add(item.clone());
         }
+        tomcatConfiguration.setDeploymentItems(deploymentItems);
     }
 
     private List<Artifact> collectDeployableArtifacts() {
@@ -168,9 +171,8 @@ public class TomcatDeploymentSettingsEditor extends SettingsEditor<TomcatConfigu
             myItems.add(lastItem);
         }
 
-        Table<TomcatArtifactDeployItem> table = myTable;
-        if (table != null && lastItem != null) {
-            table.select(lastItem);
+        if (lastItem != null) {
+            myTable.select(lastItem);
         }
     }
 

@@ -16,20 +16,16 @@
 
 package consulo.tomcat.run;
 
-import consulo.apache.tomcat.localize.TomcatLocalize;
+import consulo.compiler.artifact.ArtifactPointerManager;
 import consulo.compiler.artifact.ArtifactPointerUtil;
-import consulo.component.util.pointer.NamedPointer;
 import consulo.container.boot.ContainerPathManager;
 import consulo.content.bundle.Sdk;
 import consulo.content.bundle.SdkUtil;
 import consulo.execution.configuration.*;
 import consulo.execution.configuration.log.LogFileOptions;
 import consulo.execution.configuration.log.PredefinedLogFile;
-import consulo.execution.configuration.log.ui.LogConfigurationPanel;
-import consulo.execution.configuration.ui.SettingsEditor;
-import consulo.execution.configuration.ui.SettingsEditorGroup;
+import consulo.execution.configuration.fragment.RunConfigurationFragment;
 import consulo.execution.executor.Executor;
-import consulo.execution.localize.ExecutionLocalize;
 import consulo.execution.runner.ExecutionEnvironment;
 import consulo.module.Module;
 import consulo.module.ModuleManager;
@@ -37,8 +33,6 @@ import consulo.process.ExecutionException;
 import consulo.project.Project;
 import consulo.util.io.FileUtil;
 import consulo.util.lang.StringUtil;
-import consulo.util.xml.serializer.InvalidDataException;
-import consulo.util.xml.serializer.WriteExternalException;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.jdom.Element;
@@ -56,33 +50,42 @@ import java.util.Objects;
  */
 public class TomcatConfiguration extends LocatableConfigurationBase implements ModuleRunConfiguration {
     public static final int DEFAULT_JPDA_ADDRESS = 8000;
-    public int JPDA_ADDRESS = DEFAULT_JPDA_ADDRESS;
-    private NamedPointer<Sdk> mySdkPointer;
-    private List<TomcatArtifactDeployItem> myDeploymentItems = new ArrayList<TomcatArtifactDeployItem>();
-
-    public TomcatConfiguration(Project project, ConfigurationFactory factory, String name) {
+public TomcatConfiguration(Project project, ConfigurationFactory factory, String name) {
         super(project, factory, name);
     }
 
-    @Nonnull
     @Override
-    public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        SettingsEditorGroup<TomcatConfiguration> c = new SettingsEditorGroup<TomcatConfiguration>();
-        c.addEditor(TomcatLocalize.runConfigurationTabGeneral(), new TomcatGeneralSettingsEditor());
-        c.addEditor(TomcatLocalize.runConfigurationTabDeployment(), new TomcatDeploymentSettingsEditor(getProject()));
-        c.addEditor(ExecutionLocalize.logsTabTitle(), new LogConfigurationPanel<TomcatConfiguration>());
-        return c;
+    protected Class<TomcatConfigurationOptions> getOptionsClass() {
+        return TomcatConfigurationOptions.class;
     }
 
     @Override
-    public RunConfiguration clone() {
-        TomcatConfiguration clone = (TomcatConfiguration) super.clone();
-        List<TomcatArtifactDeployItem> deploymentItems = new ArrayList<TomcatArtifactDeployItem>(myDeploymentItems.size());
-        for (TomcatArtifactDeployItem item : myDeploymentItems) {
-            deploymentItems.add(item.clone());
+    public TomcatConfigurationOptions getOptions() {
+        return (TomcatConfigurationOptions) super.getOptions();
+    }
+
+    @Override
+    protected void convertLegacyState(LegacyRunConfigurationConverter converter) {
+        super.convertLegacyState(converter);
+
+        Element element = converter.getElement();
+        TomcatConfigurationOptions options = new TomcatConfigurationOptions();
+        options.setJpdaAddress(StringUtil.parseInt(element.getAttributeValue("jpda-address"), DEFAULT_JPDA_ADDRESS));
+        options.setSdkName(element.getAttributeValue("sdk-name"));
+        List<TomcatArtifactDeployState> artifacts = new ArrayList<>();
+        for (Element artifactElement : element.getChildren("artifact")) {
+            String name = artifactElement.getAttributeValue("name");
+            if (name != null) {
+                artifacts.add(new TomcatArtifactDeployState(name, StringUtil.notNullize(artifactElement.getAttributeValue("path"))));
+            }
         }
-        clone.myDeploymentItems = deploymentItems;
-        return clone;
+        options.setArtifacts(artifacts);
+        converter.setOptions(options);
+    }
+
+    @Override
+    public List<RunConfigurationFragment<?>> createFragments() {
+        return List.of(new TomcatBundleFragment(), new TomcatJpdaPortFragment(), new TomcatDeploymentFragment());
     }
 
     @Nullable
@@ -128,60 +131,45 @@ public class TomcatConfiguration extends LocatableConfigurationBase implements M
 
     @Nullable
     public Sdk getSdk() {
-        return mySdkPointer == null ? null : mySdkPointer.get();
+        String sdkName = getSdkName();
+        return sdkName == null ? null : SdkUtil.createPointer(sdkName).get();
     }
 
     @Nullable
     public String getSdkName() {
-        return mySdkPointer == null ? null : mySdkPointer.getName();
+        return getOptions().getSdkName();
     }
 
     public void setSdkName(@Nullable String sdkName) {
-        mySdkPointer = sdkName == null ? null : SdkUtil.createPointer(sdkName);
+        getOptions().setSdkName(sdkName);
     }
 
-    @Override
-    public void readExternal(Element element) throws InvalidDataException {
-        super.readExternal(element);
-
-        JPDA_ADDRESS = StringUtil.parseInt(element.getAttributeValue("jpda-address"), DEFAULT_JPDA_ADDRESS);
-
-        String sdkName = element.getAttributeValue("sdk-name");
-        if (sdkName != null) {
-            mySdkPointer = SdkUtil.createPointer(sdkName);
-        }
-
-        for (Element artifactElement : element.getChildren("artifact")) {
-            String name = artifactElement.getAttributeValue("name");
-            String path = artifactElement.getAttributeValue("path");
-            if (name != null) {
-                myDeploymentItems.add(new TomcatArtifactDeployItem(ArtifactPointerUtil.getPointerManager(getProject()).create(name), StringUtil.notNullize(path)));
-            }
-        }
+    public int getJpdaAddress() {
+        return getOptions().getJpdaAddress();
     }
 
-    @Override
-    public void writeExternal(Element element) throws WriteExternalException {
-        super.writeExternal(element);
-
-        if (JPDA_ADDRESS != DEFAULT_JPDA_ADDRESS) {
-            element.setAttribute("jpda-address", String.valueOf(JPDA_ADDRESS));
-        }
-
-        if (mySdkPointer != null) {
-            element.setAttribute("sdk-name", mySdkPointer.getName());
-        }
-
-        for (TomcatArtifactDeployItem artifact : myDeploymentItems) {
-            Element artifactElement = new Element("artifact");
-            artifactElement.setAttribute("name", artifact.getArtifactPointer().getName());
-            artifactElement.setAttribute("path", artifact.getPath());
-            element.addContent(artifactElement);
-        }
+    public void setJpdaAddress(int jpdaAddress) {
+        getOptions().setJpdaAddress(jpdaAddress);
     }
 
     public List<TomcatArtifactDeployItem> getDeploymentItems() {
-        return myDeploymentItems;
+        ArtifactPointerManager pointerManager = ArtifactPointerUtil.getPointerManager(getProject());
+        List<TomcatArtifactDeployItem> items = new ArrayList<>();
+        for (TomcatArtifactDeployState artifact : getOptions().getArtifacts()) {
+            String name = artifact.getName();
+            if (name != null) {
+                items.add(new TomcatArtifactDeployItem(pointerManager.create(name), StringUtil.notNullize(artifact.getPath())));
+            }
+        }
+        return items;
+    }
+
+    public void setDeploymentItems(List<TomcatArtifactDeployItem> items) {
+        List<TomcatArtifactDeployState> artifacts = new ArrayList<>();
+        for (TomcatArtifactDeployItem item : items) {
+            artifacts.add(new TomcatArtifactDeployState(item.getArtifactPointer().getName(), item.getPath()));
+        }
+        getOptions().setArtifacts(artifacts);
     }
 
     @Nonnull

@@ -12,3 +12,5 @@ run.configuration.column.path:
     text: Path
 run.configuration.title.choose.artifact:
     text: Choose Artifact
+run.configuration.fragment.jpda.port:
+    text: JPDA port

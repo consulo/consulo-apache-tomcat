@@ -53,7 +53,7 @@ public class TomcatDebugProgramRunner extends GenericDebuggerRunner
 	protected RunContentDescriptor createContentDescriptor(@Nonnull RunProfileState state, @Nonnull ExecutionEnvironment env) throws ExecutionException
 	{
 		TomcatConfiguration runProfile = (TomcatConfiguration) env.getRunProfile();
-		RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", String.valueOf(runProfile.JPDA_ADDRESS), false);
+		RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", String.valueOf(runProfile.getJpdaAddress()), false);
 		return attachVirtualMachine(state, env, connection, true);
 	}
 }

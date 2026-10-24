@@ -74,7 +74,7 @@ public class TomcatRunState implements RunProfileState
 		commandLine.setExePath(TomcatSdkType.getExecutablePath(sdk.getHomePath()));
 		if(executor.getId().equals(DebuggingRunnerData.DEBUGGER_RUNNER_ID))
 		{
-			commandLine.getEnvironment().put("JPDA_ADDRESS", String.valueOf(runProfile.JPDA_ADDRESS));
+			commandLine.getEnvironment().put("JPDA_ADDRESS", String.valueOf(runProfile.getJpdaAddress()));
 			commandLine.addParameter("jpda");
 		}
 
